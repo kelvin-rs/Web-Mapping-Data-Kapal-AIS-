@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIS Dashboard</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #fff;
+      }
+      :root {
+        --sidebar-width: 80px;
+      }
+
+      .dashboard-container {
+        margin-left: var(--sidebar-width);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #38bdf8;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+      }
+
+      .card {
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 14px;
+        color: #94a3b8;
+      }
+
+      .card .value {
+        font-size: 28px;
+        margin-top: 10px;
+        color: #38bdf8;
+        font-weight: bold;
+      }
+
+      .refresh-btn {
+        margin-top: 20px;
+        padding: 10px 15px;
+        background: #38bdf8;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #000;
+        font-weight: bold;
+      }
+
+      .refresh-btn:hover {
+        background: #0ea5e9;
+      }
+    </style>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Content -->
+    <div class="dashboard-container">
+      <h2>AIS Vessel Statistics</h2>
+
+      <div class="stats-grid">
+        <div class="card">
+          <h3>Total Vessels</h3>
+          <div class="value" id="total">0</div>
+        </div>
+
+        <div class="card">
+          <h3>Cargo Ships</h3>
+          <div class="value" id="cargo">0</div>
+        </div>
+
+        <div class="card">
+          <h3>Tanker</h3>
+          <div class="value" id="tanker">0</div>
+        </div>
+
+        <div class="card">
+          <h3>Passenger</h3>
+          <div class="value" id="passenger">0</div>
+        </div>
+
+        <div class="card">
+          <h3>Fishing</h3>
+          <div class="value" id="fishing">0</div>
+        </div>
+
+        <div class="card">
+          <h3>Others</h3>
+          <div class="value" id="other">0</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initStats } from "./assets/js/features/stats.js";
+      initStats();
+    </script>
+    <script type="module" src="assets/js/main.js?v=2"></script>
+  </body>
+</html>

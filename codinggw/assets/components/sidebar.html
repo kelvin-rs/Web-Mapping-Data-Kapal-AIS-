@@ -1,0 +1,164 @@
+<div id="navbar" class="navbar">
+  <ul>
+    <!-- Item1 -->
+    <li class="menu-item1">
+      <a href="index.html">
+        <img
+          src="assets/images/shiptracking.png"
+          alt="ship tracking"
+          class="menu-icon1"
+        />
+        <span class="menu-text1">Ship Tracking</span>
+      </a>
+    </li>
+    <p>&nbsp;&nbsp;</p>
+    <!-- Item2 -->
+    <li class="filter-item">
+      <a href="#" id="filter-btn">
+        <img
+          src="assets/images/filter kapal.png"
+          alt="Type"
+          class="menu-icon"
+        />
+        <span class="menu-text">Filters</span>
+      </a>
+      <div id="dropdown-filter" class="dropdown-filter">
+        <label for="shipType">Jenis Kapal:</label>
+        <select id="shipType">
+          <option value="">Semua</option>
+          <option value="Cargo Ship">Kargo</option>
+          <option va lue="Tanker">Tanker</option>
+          <option value="Passenger Ship">Penumpang</option>
+          <option value="Fishing Vessel">Ikan</option>
+        </select>
+        <label for="shipOwner">Pemilik Kapal:</label>
+        <select id="shipOwner">
+          <option value="">Semua</option>
+          <option value="Ship">Kapal Global</option>
+          <option value="Coastal Station">Stasiun Pesisir</option>
+          <option value="Group of shipsSAR — Search and Rescue Aircraft">
+            SAR Udara
+          </option>
+          <option value="Diver's radio">Radio Penyelam</option>
+          <option value="Aids to navigation">Navigasi</option>
+          <option value="Auxiliary craft associated with parent ship">
+            Kapal Pendukung
+          </option>
+          <option value="AIS SART — Search and Rescue Transmitter">
+            AIS SART
+          </option>
+          <option value="MOB — Man Overboard Device">Perangkat MOB</option>
+          <option value="EPIRB — Emergency Position Indicating Radio Beacon">
+            Beacon Darurat
+          </option>
+        </select>
+        <label for="shipSpeed">Kecepatan (Knots):</label>
+        <input
+          type="number"
+          id="shipSpeed"
+          placeholder="Masukkan kecepatan"
+          min="0"
+        />
+        <label for="shipStatus">Status:</label>
+        <select id="shipStatus">
+          <option value="">Semua</option>
+          <option value="Berlayar">Berlayar</option>
+          <option value="Berlabuh">Berlabuh</option>
+        </select>
+        <label for="shipCountry">Negara Asal:</label>
+        <input
+          type="text"
+          id="shipCountry"
+          placeholder="Masukkan negara asal"
+        />
+        <button id="apply-filter-btn">Cari</button>
+      </div>
+    </li>
+    <!-- Item3 -->
+    <li class="filter-item">
+      <a href="#" id="weather-btn">
+        <img src="assets/images/cuaca.png" alt="Weather" class="menu-icon" />
+        <span class="menu-text">Weather</span>
+      </a>
+      <div id="weather-legends" class="weather-legend">
+        <h4>Weather Layers</h4>
+        <label
+          ><input
+            type="radio"
+            name="weatherLayer"
+            id="noneLayer"
+            value="none"
+            checked
+          />
+          None</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="weatherLayer"
+            id="windLayer"
+            value="wind"
+          />
+          Wind</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="weatherLayer"
+            id="tempLayer"
+            value="temperature"
+          />
+          Temperature</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="weatherLayer"
+            id="rainLayer"
+            value="rain"
+          />
+          Precipitation</label
+        >
+        <div id="weather-legend-description" class="weather-legend-description">
+          <h4>Color Scale</h4>
+          <p><strong>Wind:</strong></p>
+          <div class="color-scale">
+            <span>Weak</span>
+            <div class="color-bar wind"></div>
+            <span>Strong</span>
+          </div>
+          <p><strong>Temperature:</strong></p>
+          <div class="color-scale">
+            <span>Cold</span>
+            <div class="color-bar temperature"></div>
+            <span>Hot</span>
+          </div>
+          <p><strong>Precipitation:</strong></p>
+          <div class="color-scale">
+            <span>Light</span>
+            <div class="color-bar rain"></div>
+            <span>Heavy</span>
+          </div>
+        </div>
+      </div>
+    </li>
+    <!-- Item4 -->
+    <li>
+      <a href="#" id="distance-btn">
+        <img
+          src="assets/images/ukur.png"
+          alt="Measure Distance"
+          class="menu-icon"
+        />
+        <span class="menu-text">Measure Distance</span>
+      </a>
+    </li>
+    <!-- Item5 -->
+    <li>
+      <a href="dashboard.html" id="stats-btn">
+        <img src="assets/images/stats.png" alt="Statistics" class="menu-icon" />
+        <span class="menu-text">Statistics</span>
+      </a>
+    </li>
+  </ul>
+</div>
