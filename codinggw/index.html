@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ship Tracking</title>
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css" />
+
+    <!-- Leaflet -->
     <link rel="stylesheet" href="assets/css/leaflet.css" />
     <link rel="stylesheet" href="assets/css/leafletdraw.css" />
     <link
@@ -12,26 +15,37 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
   </head>
-  <body>
-    <div class="container">
-      <div class="hover-area"></div>
-      <!-- Sidebar -->
-      <div id="sidebar-container"></div>
-    </div>
-    <!-- Search and Vessel Filter Containers -->
-    <div class="search-container">
-      <input type="text" id="search-input" placeholder="Search vessels..." />
-      <button id="search-btn">Search</button>
+  <body class="h-screen overflow-hidden bg-slate-900">
+    <!-- SIDEBAR -->
+    <div id="sidebar-container" class="fixed top-0 left-0 h-full w-16 bg-black border-r-4 border-blue-500 z-40 hover:w-52 transition-all duration-300 overflow-visible"></div>></div>
+
+    <!-- SEARCH BAR -->
+    <div
+      class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-white shadow-lg rounded-lg px-3 py-2 flex gap-2">
+      
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search vessels..."
+        class="outline-none text-sm w-48"
+      />
+
+      <button
+        id="search-btn"
+        class="bg-pink-500 text-white px-3 py-1 rounded text-sm">
+        Search
+      </button>
     </div>
 
-    <div id="map"></div>
-
-    <!-- <script src="https://unpkg.com/leaflet-rotatedmarker/leaflet.rotatedMarker.js"></script> -->
+    <!-- MAP -->
+    <div id="map" class="w-full h-full z-0"></div>
 
     <script src="assets/js/plugins/leaflet.js"></script>
-    <script src="assets/js/features/weather.js"></script>
     <script src="assets/js/plugins/leafletdraw.js"></script>
     <script src="assets/js/plugins/leaflet.rotatedMarker.js"></script>
+    <script src="assets/js/features/weather.js"></script>
     <script type="module" src="assets/js/main.js?v=2"></script>
+     <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
   </body>
 </html>

@@ -5,116 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AIS Dashboard</title>
 
-    <style>
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #0f172a;
-        color: #fff;
-      }
-      :root {
-        --sidebar-width: 80px;
-      }
-
-      .dashboard-container {
-        margin-left: var(--sidebar-width);
-      }
-
-      h2 {
-        margin-bottom: 20px;
-        color: #38bdf8;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 15px;
-      }
-
-      .card {
-        background: #1e293b;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        text-align: center;
-      }
-
-      .card h3 {
-        margin: 0;
-        font-size: 14px;
-        color: #94a3b8;
-      }
-
-      .card .value {
-        font-size: 28px;
-        margin-top: 10px;
-        color: #38bdf8;
-        font-weight: bold;
-      }
-
-      .refresh-btn {
-        margin-top: 20px;
-        padding: 10px 15px;
-        background: #38bdf8;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #000;
-        font-weight: bold;
-      }
-
-      .refresh-btn:hover {
-        background: #0ea5e9;
-      }
-    </style>
-    <link rel="stylesheet" href="assets/css/style.css" />
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <body>
-    <!-- sidebar -->
+  <body class="bg-slate-900 text-white min-h-screen">
+    <!-- SIDEBAR -->
     <div id="sidebar-container"></div>
 
-    <!-- Content -->
-    <div class="dashboard-container">
-      <h2>AIS Vessel Statistics</h2>
+    <!-- CONTENT -->
+    <div class="ml-16 p-6">
+      <h2 class="text-2xl font-semibold text-cyan-400 mb-6">
+        AIS Vessel Statistics
+      </h2>
 
-      <div class="stats-grid">
-        <div class="card">
-          <h3>Total Vessels</h3>
-          <div class="value" id="total">0</div>
+      <!-- GRID -->
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+      >
+        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
+          <h3 class="text-sm text-slate-400">Total Vessels</h3>
+          <div class="text-3xl font-bold text-cyan-400 mt-2" id="total">0</div>
         </div>
 
-        <div class="card">
-          <h3>Cargo Ships</h3>
-          <div class="value" id="cargo">0</div>
+        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
+          <h3 class="text-sm text-slate-400">Cargo Ships</h3>
+          <div class="text-3xl font-bold text-cyan-400 mt-2" id="cargo">0</div>
         </div>
 
-        <div class="card">
-          <h3>Tanker</h3>
-          <div class="value" id="tanker">0</div>
+        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
+          <h3 class="text-sm text-slate-400">Tanker</h3>
+          <div class="text-3xl font-bold text-cyan-400 mt-2" id="tanker">0</div>
         </div>
 
-        <div class="card">
-          <h3>Passenger</h3>
-          <div class="value" id="passenger">0</div>
+        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
+          <h3 class="text-sm text-slate-400">Passenger</h3>
+          <div class="text-3xl font-bold text-cyan-400 mt-2" id="passenger">
+            0
+          </div>
         </div>
 
-        <div class="card">
-          <h3>Fishing</h3>
-          <div class="value" id="fishing">0</div>
+        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
+          <h3 class="text-sm text-slate-400">Fishing</h3>
+          <div class="text-3xl font-bold text-cyan-400 mt-2" id="fishing">
+            0
+          </div>
         </div>
 
-        <div class="card">
-          <h3>Others</h3>
-          <div class="value" id="other">0</div>
+        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
+          <h3 class="text-sm text-slate-400">Others</h3>
+          <div class="text-3xl font-bold text-cyan-400 mt-2" id="other">0</div>
         </div>
       </div>
     </div>
 
+    <!-- SCRIPT -->
     <script type="module">
+      import { loadSidebar } from "./assets/js/features/sidebarComponents.js";
+      import { initSidebar } from "./assets/js/features/sidebar.js";
       import { initStats } from "./assets/js/features/stats.js";
-      initStats();
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadSidebar(); // load sidebar HTML
+        initSidebar(null); // dashboard tidak butuh map
+        initStats(); // load stats
+      });
     </script>
-    <script type="module" src="assets/js/main.js?v=2"></script>
   </body>
 </html>

@@ -1,59 +1,60 @@
 import { toggleMeasure } from "./measure.js";
 
 export function initSidebar(map) {
-  // FILTER BUTTON
   const filterBtn = document.getElementById("filter-btn");
-  if (filterBtn) {
-    filterBtn.addEventListener("click", toggleFilter);
-  }
-
-  // WEATHER BUTTON
   const weatherBtn = document.getElementById("weather-btn");
-  if (weatherBtn) {
-    weatherBtn.addEventListener("click", toggleWeather);
-  }
-
-  // MEASURE DISTANCE BUTTON
   const distanceBtn = document.getElementById("distance-btn");
-  if (distanceBtn) {
-    distanceBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      toggleMeasure(map);
-    });
+
+  const filterDropdown = document.getElementById("dropdown-filter");
+  const weatherDropdown = document.getElementById("weather-legends");
+
+  // FUNCTION TUTUP SEMUA
+  function closeAll() {
+    filterDropdown?.classList.add("hidden");
+    weatherDropdown?.classList.add("hidden");
   }
-}
 
-// DROPDOWN LOGIC
-function closeAllDropdowns(exceptId) {
-  const dropdowns = document.querySelectorAll(
-    ".dropdown-filter, .weather-legend, .dropdown-ship-types, .stats-section",
-  );
+  // FILTER
+  filterBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  dropdowns.forEach((dropdown) => {
-    if (dropdown.id !== exceptId) {
-      dropdown.style.display = "none";
+    const isOpen = !filterDropdown.classList.contains("hidden");
+    closeAll();
+
+    if (!isOpen) {
+      filterDropdown.classList.remove("hidden");
     }
   });
-}
 
-// FILTER DROPDOWN
-export function toggleFilter() {
-  closeAllDropdowns("dropdown-filter");
+  // WEATHER
+  weatherBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const dropdown = document.getElementById("dropdown-filter");
-  if (!dropdown) return;
+    const isOpen = !weatherDropdown.classList.contains("hidden");
+    closeAll();
 
-  dropdown.style.display =
-    dropdown.style.display === "block" ? "none" : "block";
-}
+    if (!isOpen) {
+      weatherDropdown.classList.remove("hidden");
+    }
+  });
 
-// WEATHER DROPDOWN
-export function toggleWeather() {
-  closeAllDropdowns("weather-legends");
+  // MEASURE
+  distanceBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    toggleMeasure(map);
+  });
 
-  const dropdown = document.getElementById("weather-legends");
-  if (!dropdown) return;
-
-  dropdown.style.display =
-    dropdown.style.display === "block" ? "none" : "block";
+  // CLICK DI LUAR → TUTUP
+  document.addEventListener("click", (e) => {
+    if (
+      !e.target.closest("#filter-btn") &&
+      !e.target.closest("#dropdown-filter") &&
+      !e.target.closest("#weather-btn") &&
+      !e.target.closest("#weather-legends")
+    ) {
+      closeAll();
+    }
+  });
 }

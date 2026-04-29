@@ -1,4 +1,9 @@
 import { getVessels } from "./api.js"; //Mengambil data kapal dari API
+import {
+  showVesselPanel,
+  updatePanel,
+  getActiveVessel,
+} from "../features/vesselPanel.js";
 
 let markers = {}; // Menyimpan marker per MMSI
 let vesselHistory = {}; // Menyimpan history posisi per MMSI
@@ -94,34 +99,38 @@ function createMarker(map, vessel) {
     rotationOrigin: "center",
   })
     .addTo(map)
-    .bindPopup(
-      "MMSI: " +
-        vessel.mmsi +
-        "<br>" +
-        "Speed: " +
-        vessel.speed +
-        " km/h<br>" +
-        "Course: " +
-        vessel.course +
-        "<br>" +
-        "Waktu: " +
-        vessel.waktu +
-        "<br>" +
-        "Status: " +
-        vessel.status +
-        "<br>" +
-        "Direction: " +
-        calculateDirection(vessel.course) +
-        "<br>" +
-        "Country: " +
-        vessel.country +
-        "<br>" +
-        "Owner: " +
-        vessel.owner +
-        "<br>" +
-        "Ship Type: " +
-        vessel["ship type"],
-    );
+    .bindPopup(createPopupHTML(vessel, calculateDirection(vessel.course)), {
+      maxWidth: 400,
+      className: "mt-popup"
+    });
+  // .bindPopup(
+  //   "MMSI: " +
+  //     vessel.mmsi +
+  //     "<br>" +
+  //     "Speed: " +
+  //     vessel.speed +
+  //     " km/h<br>" +
+  //     "Course: " +
+  //     vessel.course +
+  //     "<br>" +
+  //     "Waktu: " +
+  //     vessel.waktu +
+  //     "<br>" +
+  //     "Status: " +
+  //     vessel.status +
+  //     "<br>" +
+  //     "Direction: " +
+  //     calculateDirection(vessel.course) +
+  //     "<br>" +
+  //     "Country: " +
+  //     vessel.country +
+  //     "<br>" +
+  //     "Owner: " +
+  //     vessel.owner +
+  //     "<br>" +
+  //     "Ship Type: " +
+  //     vessel["ship type"],
+  // );
 }
 
 // Fungsi untuk memperbarui posisi marker kapal
@@ -141,6 +150,7 @@ function updateVesselsOnMap(map, vesselList) {
       delete markers[mmsi];
     }
   });
+  const active = getActiveVessel();
   // Tambahkan atau perbarui marker kapal yang ada di data terbaru
   vesselList.forEach((vessel) => {
     if (!vessel.lat || !vessel.lon) return;
@@ -151,6 +161,10 @@ function updateVesselsOnMap(map, vesselList) {
       updateMarker(markers[vessel.mmsi], vessel);
     } else {
       markers[vessel.mmsi] = createMarker(map, vessel);
+    }
+
+    if (active && active.mmsi === vessel.mmsi) {
+      updatePanel(vessel);
     }
   });
 }
@@ -180,7 +194,7 @@ export function clearProcessor(map) {
 
 export function getLastVessels() {
   return lastVessels;
-} 
+}
 
 // Fungsi untuk memulai polling kapal
 export function startVesselPolling(map) {
@@ -199,4 +213,73 @@ export function startVesselPolling(map) {
     setTimeout(poll, 5000);
   }
   poll();
+}
+
+function createPopupHTML(v, direction) {
+  return `
+  <div class="w-[300px] bg-white rounded-xl shadow-xl overflow-hidden text-gray-800">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between px-3 py-2 bg-gray-100 border-b">
+      <div>
+        <div class="text-sm font-semibold">${v.mmsi}</div>
+        <div class="text-xs text-gray-500">${v["ship type"] || "-"}</div>
+      </div>
+    </div>
+
+    <!-- IMAGE -->
+    <div class="w-full h-36 bg-gray-300">
+      <img src="https://via.placeholder.com/300x150"
+        class="w-full h-full object-cover"/>
+    </div>
+
+    <!-- BUTTON -->
+    <div class="flex gap-2 px-3 py-2">
+      <button class="flex-1 bg-gray-200 text-xs py-1 rounded">
+        Add
+      </button>
+      <button class="flex-1 bg-blue-500 text-white text-xs py-1 rounded">
+        Details
+      </button>
+    </div>
+
+    <!-- ROUTE (SIMULASI) -->
+    <div class="px-3 py-2">
+      <div class="flex justify-between text-xs mb-1">
+        <span>${v.country || "-"}</span>
+        <span>ETA: -</span>
+      </div>
+
+      <div class="w-full h-1 bg-gray-300 rounded relative">
+        <div class="absolute left-0 top-0 h-1 w-1/2 bg-blue-500 rounded"></div>
+      </div>
+    </div>
+
+    <!-- INFO GRID -->
+    <div class="grid grid-cols-2 gap-2 px-3 py-2 text-xs border-t">
+      <div>
+        <div class="text-gray-400">Status</div>
+        <div class="font-medium">${v.status}</div>
+      </div>
+      <div>
+        <div class="text-gray-400">Speed</div>
+        <div>${v.speed} km/h</div>
+      </div>
+      <div>
+        <div class="text-gray-400">Course</div>
+        <div>${v.course}°</div>
+      </div>
+      <div>
+        <div class="text-gray-400">Owner</div>
+        <div>${v.owner || "-"}</div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="px-3 py-2 text-[11px] text-gray-500 bg-gray-50">
+      Updated: ${v.waktu || "-"}
+    </div>
+
+  </div>
+  `;
 }
