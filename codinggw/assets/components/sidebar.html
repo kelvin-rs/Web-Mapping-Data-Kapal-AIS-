@@ -1,16 +1,37 @@
 <!-- HEROICONS -->
-<script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js"></script>
-
 <div
   id="navbar"
-  class="group fixed top-0 left-0 h-full w-16 bg-slate-900 border-r border-slate-700 z-40 hover:w-56 transition-all duration-300 overflow-visible"
+  class="group fixed top-0 left-0 h-full w-[4.5rem] hover:w-64 bg-[#0f172a]/95 backdrop-blur-xl border-r border-slate-800 z-[1000] transition-all duration-300 ease-in-out shadow-2xl overflow-visible flex flex-col py-6"
 >
-  <ul class="flex flex-col gap-2 p-2">
+  <ul class="flex flex-col gap-6 px-3">
     <!-- LOGO -->
-    <li>
-      <a href="index.html" class="flex items-center gap-3 p-2">
-        <img src="assets/images/shiptracking.png" class="w-8 h-8" />
-        <span class="text-white text-sm font-semibold hidden group-hover:block">
+    <li class="mb-2">
+      <a
+        href="index.html"
+        class="flex items-center gap-4 px-2 py-2 outline-none"
+      >
+        <div class="relative flex-shrink-0">
+          <div
+            class="absolute inset-0 bg-cyan-500 blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-300"
+          ></div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="relative w-9 h-9 text-cyan-400 transition-transform duration-500 group-hover:rotate-180"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+            />
+          </svg>
+        </div>
+        <span
+          class="text-white text-[1.05rem] font-bold tracking-wide opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap"
+        >
           Ship Tracking
         </span>
       </a>
@@ -20,81 +41,105 @@
     <li class="relative">
       <button
         id="filter-btn"
-        class="w-full flex items-center gap-3 p-2 rounded hover:bg-slate-800 text-white transition"
+        class="w-full flex items-center gap-4 px-2.5 py-2.5 rounded-xl text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-200 outline-none group/btn"
       >
-        <img src="assets/images/filter kapal.png" class="w-6 h-6" />  
-        <span class="hidden group-hover:block">Filters</span>
+        <img src="assets/images/filter kapal.png" class="w-6 h-6" />
+        <span
+          class="text-[0.95rem] font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap"
+        >
+          Filters
+        </span>
       </button>
 
-      <!-- DROPDOWN -->
       <div
         id="dropdown-filter"
-        class="hidden absolute left-full top-0 ml-4 w-72 bg-slate-900 text-white p-5 rounded-xl shadow-2xl border border-slate-700 z-50 space-y-4"
+        class="hidden absolute left-full top-0 ml-5 w-[calc(100vw-6rem)] max-w-[320px] bg-slate-900/95 backdrop-blur-2xl text-slate-200 p-6 rounded-2xl shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] border border-slate-700/50 z-50 transform transition-all"
       >
-        <h3 class="text-sm font-semibold text-cyan-400 mb-2">Filter Vessels</h3>
-
-        <div class="space-y-3">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-1.5 h-4 bg-cyan-500 rounded-full"></div>
+          <h3 class="text-base font-bold text-white tracking-wide">
+            Filter Vessels
+          </h3>
+        </div>
+        <div class="space-y-4">
           <div>
-            <label class="text-xs text-slate-400">Jenis Kapal</label>
+            <label
+              class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+              >Jenis Kapal</label
+            >
             <select
               id="shipType"
-              class="w-full mt-1 p-2 rounded-md bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors appearance-none cursor-pointer"
             >
-              <option value="">Semua</option>
+              <option value="">Semua Kategori</option>
               <option value="Cargo Ship">Kargo</option>
               <option value="Tanker">Tanker</option>
               <option value="Passenger Ship">Penumpang</option>
               <option value="Fishing Vessel">Ikan</option>
             </select>
           </div>
-
-          <div>
-            <label class="text-xs text-slate-400">Pemilik</label>
-            <select
-              id="shipOwner"
-              class="w-full mt-1 p-2 rounded-md bg-slate-800 text-sm focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="">Semua</option>
-              <option value="Ship">Kapal</option>
-              <option value="Coastal Station">Stasiun</option>
-            </select>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                >Pemilik</label
+              >
+              <select
+                id="shipOwner"
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-500 transition-colors appearance-none cursor-pointer"
+              >
+                <option value="">Semua</option>
+                <option value="Ship">Kapal</option>
+                <option value="Coastal Station">Stasiun</option>
+              </select>
+            </div>
+            <div>
+              <label
+                class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                >Status</label
+              >
+              <select
+                id="shipStatus"
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-500 transition-colors appearance-none cursor-pointer"
+              >
+                <option value="">Semua</option>
+                <option value="Berlayar">Berlayar</option>
+                <option value="Berlabuh">Berlabuh</option>
+              </select>
+            </div>
           </div>
-
-          <div>
-            <label class="text-xs text-slate-400">Speed</label>
-            <input
-              id="shipSpeed"
-              type="number"
-              class="w-full mt-1 p-2 rounded-md bg-slate-800 text-sm focus:ring-2 focus:ring-cyan-500"
-            />
-          </div>
-
-          <div>
-            <label class="text-xs text-slate-400">Status</label>
-            <select
-              id="shipStatus"
-              class="w-full mt-1 p-2 rounded-md bg-slate-800 text-sm focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="">Semua</option>
-              <option value="Berlayar">Berlayar</option>
-              <option value="Berlabuh">Berlabuh</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-xs text-slate-400">Negara</label>
-            <input
-              id="shipCountry"
-              class="w-full mt-1 p-2 rounded-md bg-slate-800 text-sm focus:ring-2 focus:ring-cyan-500"
-            />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                >Speed (kn)</label
+              >
+              <input
+                id="shipSpeed"
+                type="number"
+                placeholder="Min. speed"
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                >Negara</label
+              >
+              <input
+                id="shipCountry"
+                type="text"
+                placeholder="e.g. ID"
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2.5 text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
+              />
+            </div>
           </div>
         </div>
-
         <button
           id="apply-filter-btn"
-          class="w-full mt-2 bg-pink-500 hover:bg-pink-600 py-2 rounded-md text-sm font-semibold transition"
+          class="w-full mt-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white py-2.5 rounded-lg text-sm font-bold shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)] transition-all active:scale-95"
         >
-          Cari
+          Terapkan Filter
         </button>
       </div>
     </li>
@@ -103,36 +148,71 @@
     <li class="relative">
       <button
         id="weather-btn"
-        class="w-full flex items-center gap-3 p-2 rounded hover:bg-slate-800 text-white transition"
+        class="w-full flex items-center gap-4 px-2.5 py-2.5 rounded-xl text-slate-400 hover:text-sky-400 hover:bg-slate-800/50 transition-all duration-200 outline-none group/btn"
       >
         <img src="assets/images/cuaca.png" class="w-6 h-6" />
-        <span class="hidden group-hover:block">Weather</span>
+        <span
+          class="text-[0.95rem] font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap"
+        >
+          Weather Layers
+        </span>
       </button>
 
       <div
         id="weather-legends"
-        class="hidden absolute left-full top-0 ml-4 w-64 bg-slate-900 text-white p-5 rounded-xl shadow-2xl border border-slate-700 space-y-3"
+        class="hidden absolute left-full top-0 ml-5 w-64 bg-slate-900/95 backdrop-blur-2xl text-slate-200 p-5 rounded-2xl shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] border border-slate-700/50 z-50 transform transition-all"
       >
-        <h3 class="text-sm font-semibold text-cyan-400">Weather Layer</h3>
-        <div clas="space-y-3">
-          <label class="flex items-center gap-2 text-sm">
-            <input type="radio" name="weatherLayer" value="none" checked />
-            None
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-1.5 h-4 bg-sky-400 rounded-full"></div>
+          <h3 class="text-base font-bold text-white tracking-wide">
+            Peta Cuaca
+          </h3>
+        </div>
+        <div class="space-y-1.5">
+          <label
+            class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700"
+          >
+            <input
+              type="radio"
+              name="weatherLayer"
+              value="none"
+              checked
+              class="w-4 h-4 text-sky-500 bg-slate-950 border-slate-700 cursor-pointer"
+            />
+            <span class="text-sm font-medium">None</span>
           </label>
-
-          <label class="flex items-center gap-2 text-sm">
-            <input type="radio" name="weatherLayer" value="wind" />
-            Wind
+          <label
+            class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700"
+          >
+            <input
+              type="radio"
+              name="weatherLayer"
+              value="wind"
+              class="w-4 h-4 text-sky-500 bg-slate-950 border-slate-700 cursor-pointer"
+            />
+            <span class="text-sm font-medium">Wind Layer</span>
           </label>
-
-          <label class="flex items-center gap-2 text-sm">
-            <input type="radio" name="weatherLayer" value="temperature" />
-            Temperature
+          <label
+            class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700"
+          >
+            <input
+              type="radio"
+              name="weatherLayer"
+              value="temperature"
+              class="w-4 h-4 text-sky-500 bg-slate-950 border-slate-700 cursor-pointer"
+            />
+            <span class="text-sm font-medium">Temperature</span>
           </label>
-
-          <label class="flex items-center gap-2 text-sm">
-            <input type="radio" name="weatherLayer" value="rain" />
-            Rain
+          <label
+            class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors border border-transparent hover:border-slate-700"
+          >
+            <input
+              type="radio"
+              name="weatherLayer"
+              value="rain"
+              class="w-4 h-4 text-sky-500 bg-slate-950 border-slate-700 cursor-pointer"
+            />
+            <span class="text-sm font-medium">Precipitation (Rain)</span>
           </label>
         </div>
       </div>
@@ -142,21 +222,29 @@
     <li>
       <button
         id="distance-btn"
-        class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 text-white"
+        class="w-full flex items-center gap-4 px-2.5 py-2.5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-slate-800/50 transition-all duration-200 outline-none group/btn"
       >
         <img src="assets/images/ukur.png" class="w-6 h-6" />
-        <span class="hidden group-hover:block">Measure</span>
+        <span
+          class="text-[0.95rem] font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap"
+        >
+          Measure Tool
+        </span>
       </button>
     </li>
 
     <!-- DASHBOARD -->
     <li>
       <a
-        href="dashboard.html"
-        class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 text-white"
+        href="dashboard.html" 
+        class="w-full flex items-center gap-4 px-2.5 py-2.5 rounded-xl text-slate-400 hover:text-indigo-400 hover:bg-slate-800/50 transition-all duration-200 outline-none group/btn"
       >
-        <img src="assets/images/stats.png" class="w-6 h-6" />
-        <span class="hidden group-hover:block">Stats</span>
+        <img src="assets/images/ukur.png" class="w-6 h-6" />
+        <span
+          class="text-[0.95rem] font-medium opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap"
+        >
+          Statistics
+        </span>
       </a>
     </li>
   </ul>

@@ -17,22 +17,44 @@
   </head>
   <body class="h-screen overflow-hidden bg-slate-900">
     <!-- SIDEBAR -->
-    <div id="sidebar-container" class="fixed top-0 left-0 h-full w-16 bg-black border-r-4 border-blue-500 z-40 hover:w-52 transition-all duration-300 overflow-visible"></div>></div>
+    <div
+      id="sidebar-container"
+      class="group fixed top-0 left-0 h-full w-[4.5rem] hover:w-64 bg-[#0f172a]/95 backdrop-blur-xl border-r border-slate-800 z-[1000] transition-all duration-300 ease-in-out shadow-2xl overflow-visible flex flex-col py-6"
+    ></div>
 
     <!-- SEARCH BAR -->
     <div
-      class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-white shadow-lg rounded-lg px-3 py-2 flex gap-2">
-      
+      class="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] flex items-center bg-[#0f172a]/90 backdrop-blur-xl border border-slate-800 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.7)] rounded-full p-1.5 w-[300px] sm:w-[400px] transition-all duration-300 focus-within:border-pink-500/50 focus-within:shadow-[0_0_20px_rgba(236,72,153,0.15)] sm:focus-within:w-[420px]"
+    >
+      <div class="pl-3 pr-2 text-slate-400 flex-shrink-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-4 h-4"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          />
+        </svg>
+      </div>
+
       <input
         id="search-input"
         type="text"
         placeholder="Search vessels..."
-        class="outline-none text-sm w-48"
+        class="w-full bg-transparent text-sm text-slate-200 placeholder-slate-500 outline-none px-1"
+        autocomplete="off"
       />
 
       <button
         id="search-btn"
-        class="bg-pink-500 text-white px-3 py-1 rounded text-sm">
+        class="bg-gradient-to-r from-indigo-300 to-indigo-500 hover:from-indigo-500 hover:to-indigo-300 text-white px-5 py-2 rounded-full text-sm font-bold shadow-[0_0_15px_-3px_rgba(236,72,153,0.4)] transition-all active:scale-95 flex-shrink-0"
+      >
         Search
       </button>
     </div>
@@ -40,12 +62,27 @@
     <!-- MAP -->
     <div id="map" class="w-full h-full z-0"></div>
 
+    <div
+      id="vessel-detail-panel"
+      class="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none p-4 transition-all duration-300 opacity-0 invisible"
+    >
+      <div
+        class="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto cursor-pointer"
+        onclick="closeVesselPanel()"
+      ></div>
+
+      <div
+        id="panel-content"
+        class="relative bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden pointer-events-auto transform scale-95 transition-transform duration-300"
+      ></div>
+    </div>
+
     <script src="assets/js/plugins/leaflet.js"></script>
     <script src="assets/js/plugins/leafletdraw.js"></script>
     <script src="assets/js/plugins/leaflet.rotatedMarker.js"></script>
     <script src="assets/js/features/weather.js"></script>
     <script type="module" src="assets/js/main.js?v=2"></script>
-     <!-- Tailwind CDN -->
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
   </body>
 </html>

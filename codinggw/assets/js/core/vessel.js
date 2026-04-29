@@ -1,9 +1,4 @@
 import { getVessels } from "./api.js"; //Mengambil data kapal dari API
-import {
-  showVesselPanel,
-  updatePanel,
-  getActiveVessel,
-} from "../features/vesselPanel.js";
 
 let markers = {}; // Menyimpan marker per MMSI
 let vesselHistory = {}; // Menyimpan history posisi per MMSI
@@ -99,9 +94,9 @@ function createMarker(map, vessel) {
     rotationOrigin: "center",
   })
     .addTo(map)
-    .bindPopup(createPopupHTML(vessel, calculateDirection(vessel.course)), {
-      maxWidth: 400,
-      className: "mt-popup"
+    .on("click", function (e) {
+      L.DomEvent.stopPropagation(e);
+      showVesselPanels(vessel);
     });
   // .bindPopup(
   //   "MMSI: " +
@@ -150,7 +145,6 @@ function updateVesselsOnMap(map, vesselList) {
       delete markers[mmsi];
     }
   });
-  const active = getActiveVessel();
   // Tambahkan atau perbarui marker kapal yang ada di data terbaru
   vesselList.forEach((vessel) => {
     if (!vessel.lat || !vessel.lon) return;
@@ -161,10 +155,6 @@ function updateVesselsOnMap(map, vesselList) {
       updateMarker(markers[vessel.mmsi], vessel);
     } else {
       markers[vessel.mmsi] = createMarker(map, vessel);
-    }
-
-    if (active && active.mmsi === vessel.mmsi) {
-      updatePanel(vessel);
     }
   });
 }
@@ -215,71 +205,119 @@ export function startVesselPolling(map) {
   poll();
 }
 
-function createPopupHTML(v, direction) {
+function showVesselPanels(v) {
+  const panel = document.getElementById("vessel-detail-panel");
+  const content = document.getElementById("panel-content");
+  const direction = calculateDirection(v.course);
+  content.innerHTML = createVesselHTML(v, direction);
+  panel.classList.remove("opacity-0", "invisible");
+  content.classList.remove("scale-95");
+  content.classList.add("scale-100");
+}
+
+function closeVesselPanel() {
+  const panel = document.getElementById("vessel-detail-panel");
+  const content = document.getElementById("panel-content");
+
+  if (panel && content) {
+    panel.classList.add("opacity-0", "invisible");
+    content.classList.remove("scale-100");
+    content.classList.add("scale-95");
+  }
+}
+
+window.closeVesselPanel = closeVesselPanel;
+
+function createVesselHTML(v, direction) {
   return `
-  <div class="w-[300px] bg-white rounded-xl shadow-xl overflow-hidden text-gray-800">
+    <button onclick="closeVesselPanel()" class="absolute right-3 top-3 z-10 bg-white/80 backdrop-blur rounded-full p-1 shadow-md hover:bg-gray-100 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
 
-    <!-- HEADER -->
-    <div class="flex items-center justify-between px-3 py-2 bg-gray-100 border-b">
-      <div>
-        <div class="text-sm font-semibold">${v.mmsi}</div>
-        <div class="text-xs text-gray-500">${v["ship type"] || "-"}</div>
-      </div>
+    <div class="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+        <img src="https://flagcdn.com/w40/${v.country || "lr"}.png" class="w-6 h-4 object-cover rounded-sm shadow-sm" alt="flag">
+        <div>
+            <h3 class="font-bold text-gray-800 leading-none uppercase tracking-tight">${v.owner || v.mmsi}</h3>
+            <span class="text-[11px] text-gray-500 font-medium uppercase">${v["ship type"] || "Container Ship"}</span>
+        </div>
     </div>
 
-    <!-- IMAGE -->
-    <div class="w-full h-36 bg-gray-300">
-      <img src="https://via.placeholder.com/300x150"
-        class="w-full h-full object-cover"/>
+    <div class="relative h-48 bg-gray-200">
+        <img src="${v.image_url || "https://images.unsplash.com/photo-1544449553-3b1a8f331265?q=80&w=500"}" 
+             class="w-full h-full object-cover" />
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-white">
+            <p class="text-[10px] opacity-80">© Photo by MarineTraffic Community</p>
+        </div>
     </div>
 
-    <!-- BUTTON -->
-    <div class="flex gap-2 px-3 py-2">
-      <button class="flex-1 bg-gray-200 text-xs py-1 rounded">
-        Add
-      </button>
-      <button class="flex-1 bg-blue-500 text-white text-xs py-1 rounded">
-        Details
-      </button>
+    <div class="p-4 bg-white">
+        <div class="flex justify-between items-end mb-4">
+            <div class="text-center flex-1">
+                <div class="text-2xl font-bold text-gray-800 leading-tight">FPO</div>
+                <div class="text-[10px] text-gray-400 font-bold uppercase">Departure</div>
+            </div>
+            
+            <div class="flex-[2] px-4 pb-2">
+                <div class="relative flex items-center">
+                    <div class="w-full h-[3px] bg-gray-100 rounded-full overflow-hidden">
+                        <div class="bg-sky-400 h-full" style="width: 65%"></div>
+                    </div>
+                    <div class="absolute left-[65%] -translate-y-1/2 top-1/2">
+                        <svg class="w-5 h-5 text-sky-500 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center flex-1">
+                <div class="text-2xl font-bold text-gray-800 leading-tight">BCN</div>
+                <div class="text-[10px] text-gray-400 font-bold uppercase">Destination</div>
+            </div>
+        </div>
+
+        <div class="flex justify-between text-[11px] mb-4 text-gray-600 px-2">
+            <div class="text-left">
+                <span class="block text-gray-400 font-semibold uppercase text-[9px]">ATD</span>
+                2024-04-20 06:12
+            </div>
+            <div class="text-right">
+                <span class="block text-gray-400 font-semibold uppercase text-[9px]">Reported ETA</span>
+              ${v.waktu}
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <button class="flex-1 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                Past Track
+            </button>
+            <button class="flex-1 border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold py-2.5 rounded-lg transition">
+                Route Forecast
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-0 border-t border-gray-100">
+            <div class="p-3 border-r border-gray-100">
+                <div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Nav Status</div>
+                <div class="text-[11px] font-bold text-green-600 line-clamp-2 uppercase">${v.status}</div>
+            </div>
+            <div class="p-3 border-r border-gray-100 text-center">
+                <div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Speed/Course</div>
+                <div class="text-[11px] font-bold text-gray-800">${v.speed} kn / ${calculateDirection(v.course)} (${v.course}°)</div>
+            </div>
+            <div class="p-3 text-right">
+                <div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Draught</div>
+                <div class="text-[11px] font-bold text-gray-800">${v.draught || "14.6"}m</div>
+            </div>
+        </div>
     </div>
 
-    <!-- ROUTE (SIMULASI) -->
-    <div class="px-3 py-2">
-      <div class="flex justify-between text-xs mb-1">
-        <span>${v.country || "-"}</span>
-        <span>ETA: -</span>
-      </div>
-
-      <div class="w-full h-1 bg-gray-300 rounded relative">
-        <div class="absolute left-0 top-0 h-1 w-1/2 bg-blue-500 rounded"></div>
-      </div>
+    <div class="bg-gray-50 px-4 py-2 flex justify-between items-center text-[10px] text-gray-400">
+        <span>Received: 57 minutes ago</span>
+        <span class="font-semibold text-sky-500 uppercase">AIS Source: Roaming</span>
     </div>
-
-    <!-- INFO GRID -->
-    <div class="grid grid-cols-2 gap-2 px-3 py-2 text-xs border-t">
-      <div>
-        <div class="text-gray-400">Status</div>
-        <div class="font-medium">${v.status}</div>
-      </div>
-      <div>
-        <div class="text-gray-400">Speed</div>
-        <div>${v.speed} km/h</div>
-      </div>
-      <div>
-        <div class="text-gray-400">Course</div>
-        <div>${v.course}°</div>
-      </div>
-      <div>
-        <div class="text-gray-400">Owner</div>
-        <div>${v.owner || "-"}</div>
-      </div>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="px-3 py-2 text-[11px] text-gray-500 bg-gray-50">
-      Updated: ${v.waktu || "-"}
-    </div>
-
-  </div>
-  `;
+    `;
 }
