@@ -1,0 +1,12 @@
+/* HAPUS GAYA BAWAAN LEAFLET TOOLTIP */
+.custom-vessel-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+/* Sembunyikan segitiga/panah kecil bawaan Leaflet */
+.custom-vessel-tooltip::before,
+.custom-vessel-tooltip::after {
+  display: none !important;
+}

@@ -1,74 +1,440 @@
 <!doctype html>
-<html lang="en">
+<html lang="id" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AIS Dashboard</title>
-    <!-- Tailwind CDN -->
+    <title>Maritime Analytics Dashboard</title>
+
+    <!-- Font & CSS -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Konfigurasi Tailwind & Animasi Kustom -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            animation: {
+              blob: "blob 7s infinite",
+              "gradient-x": "gradient-x 3s ease infinite",
+            },
+            keyframes: {
+              blob: {
+                "0%": { transform: "translate(0px, 0px) scale(1)" },
+                "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                "100%": { transform: "translate(0px, 0px) scale(1)" },
+              },
+              "gradient-x": {
+                "0%, 100%": {
+                  "background-size": "200% 200%",
+                  "background-position": "left center",
+                },
+                "50%": {
+                  "background-size": "200% 200%",
+                  "background-position": "right center",
+                },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Scrollbar Super Sleek */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #94a3b8;
+        border-radius: 20px;
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #334155;
+      }
+      .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+        background-color: #06b6d4;
+      }
+    </style>
   </head>
+  <body
+    class="bg-slate-50 dark:bg-[#0b1120] text-slate-800 dark:text-slate-200 overflow-hidden flex h-screen transition-colors duration-500"
+  >
+    <!-- Tempat Sidebar Dimuat -->
+    <div id="sidebar-container" class="z-[1000] shrink-0"></div>
 
-  <body class="bg-slate-900 text-white min-h-screen">
-    <!-- SIDEBAR -->
-    <div id="sidebar-container"></div>
-
-    <!-- CONTENT -->
-    <div class="ml-16 p-6">
-      <h2 class="text-2xl font-semibold text-cyan-400 mb-6">
-        AIS Vessel Statistics
-      </h2>
-
-      <!-- GRID -->
+    <!-- Konten Utama Dashboard -->
+    <main
+      class="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 relative ml-[4.5rem]"
+    >
+      <!-- Efek Cahaya Latar Bergerak (Animated Blob) -->
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+        class="absolute top-[-10%] left-1/4 w-96 h-96 bg-cyan-500/20 dark:bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none animate-blob mix-blend-multiply dark:mix-blend-screen"
+      ></div>
+      <div
+        class="absolute top-[20%] right-1/4 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[100px] pointer-events-none animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-screen"
+      ></div>
+
+      <!-- HEADER & TOMBOL PENGEMBANGAN -->
+      <header
+        class="mb-12 flex flex-col md:flex-row md:justify-between md:items-end gap-4 relative z-10"
       >
-        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
-          <h3 class="text-sm text-slate-400">Total Vessels</h3>
-          <div class="text-3xl font-bold text-cyan-400 mt-2" id="total">0</div>
+        <div class="group">
+          <!-- Judul dengan Gradient Animasi -->
+          <h1
+            class="text-3xl lg:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 animate-gradient-x tracking-tight mb-2 inline-block"
+          >
+            Maritime Analytics
+          </h1>
+          <div
+            class="h-1 w-20 bg-cyan-500 rounded-full group-hover:w-full transition-all duration-500 ease-out"
+          ></div>
+          <p
+            class="text-sm text-slate-500 dark:text-slate-400 font-medium mt-3"
+          >
+            Real-time Vessel Intelligence & Monitoring
+          </p>
         </div>
 
-        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
-          <h3 class="text-sm text-slate-400">Cargo Ships</h3>
-          <div class="text-3xl font-bold text-cyan-400 mt-2" id="cargo">0</div>
-        </div>
+        <div class="flex items-center gap-4">
+          <!-- Tombol Export CSV (Interactive) -->
+          <button
+            id="export-csv-btn"
+            class="group relative flex items-center gap-2 bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 hover:border-cyan-400/50 hover:bg-slate-100 dark:hover:bg-slate-800/80 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:-translate-y-0.5"
+          >
+            <svg
+              class="w-4 h-4 text-cyan-600 dark:text-cyan-400 group-hover:animate-bounce"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              ></path>
+            </svg>
+            <span
+              class="group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors"
+              >Export CSV</span
+            >
+          </button>
 
-        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
-          <h3 class="text-sm text-slate-400">Tanker</h3>
-          <div class="text-3xl font-bold text-cyan-400 mt-2" id="tanker">0</div>
+          <!-- Tombol Toggle Tema -->
+          <button
+            id="theme-toggle-btn"
+            class="group p-3 bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 hover:border-amber-400/50 dark:hover:border-cyan-400/50 rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+          >
+            <svg
+              id="icon-moon"
+              class="w-5 h-5 hidden dark:block text-slate-400 group-hover:text-cyan-400 transition-colors group-hover:rotate-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              ></path>
+            </svg>
+            <svg
+              id="icon-sun"
+              class="w-5 h-5 block dark:hidden text-amber-500 group-hover:rotate-90 transition-transform duration-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              ></path>
+            </svg>
+          </button>
         </div>
+      </header>
 
-        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
-          <h3 class="text-sm text-slate-400">Passenger</h3>
-          <div class="text-3xl font-bold text-cyan-400 mt-2" id="passenger">
-            0
+      <!-- METRIK UTAMA -->
+      <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mb-8 relative z-10"
+      >
+        <!-- CARD 1: Total Fleet -->
+        <div class="relative group rounded-2xl">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500"
+          ></div>
+          <div
+            class="relative bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex items-center justify-between transition-transform duration-300 group-hover:-translate-y-1"
+          >
+            <div>
+              <div
+                class="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2"
+              >
+                Total Fleet
+              </div>
+              <div
+                id="stat-total"
+                class="text-3xl font-black text-slate-800 dark:text-white tracking-tight"
+              >
+                0
+              </div>
+            </div>
+            <div
+              class="p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 border border-transparent dark:group-hover:border-indigo-500/30"
+            >
+              <img
+                src="assets/resource/images/shipping.png"
+                class="w-7 h-7 drop-shadow-md"
+              />
+            </div>
           </div>
         </div>
 
-        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
-          <h3 class="text-sm text-slate-400">Fishing</h3>
-          <div class="text-3xl font-bold text-cyan-400 mt-2" id="fishing">
-            0
+        <!-- CARD 2: Avg Speed -->
+        <div class="relative group rounded-2xl">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500"
+          ></div>
+          <div
+            class="relative bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex items-center justify-between transition-transform duration-300 group-hover:-translate-y-1"
+          >
+            <div>
+              <div
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2"
+              >
+                Avg Speed (kn)
+              </div>
+              <div
+                id="stat-speed"
+                class="text-3xl font-black text-blue-600 dark:text-cyan-400 tracking-tight"
+              >
+                0.0
+              </div>
+            </div>
+            <div
+              class="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 border border-transparent dark:group-hover:border-blue-500/30"
+            >
+              <img
+                src="assets/resource/images/speed.png"
+                class="w-7 h-7 drop-shadow-md"
+              />
+            </div>
           </div>
         </div>
 
-        <div class="bg-slate-800 rounded-lg p-4 text-center shadow">
-          <h3 class="text-sm text-slate-400">Others</h3>
-          <div class="text-3xl font-bold text-cyan-400 mt-2" id="other">0</div>
+        <!-- CARD 3: Sailing -->
+        <div class="relative group rounded-2xl">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500"
+          ></div>
+          <div
+            class="relative bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex items-center justify-between transition-transform duration-300 group-hover:-translate-y-1 overflow-hidden"
+          >
+            <div
+              class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-400/30 transition-colors duration-500"
+            ></div>
+            <div class="relative z-10">
+              <div
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2"
+              >
+                Sailing
+              </div>
+              <div
+                id="stat-sailing"
+                class="text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight"
+              >
+                0
+              </div>
+            </div>
+            <div
+              class="relative z-10 p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl group-hover:bg-emerald-100 dark:group-hover:bg-emerald-500/20 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 border border-transparent dark:group-hover:border-emerald-500/30"
+            >
+              <img
+                src="assets/resource/images/sailing-boat.png"
+                class="w-7 h-7 drop-shadow-md"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4: Anchored -->
+        <div class="relative group rounded-2xl">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-r from-rose-400 to-pink-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500"
+          ></div>
+          <div
+            class="relative bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex items-center justify-between transition-transform duration-300 group-hover:-translate-y-1 overflow-hidden"
+          >
+            <div
+              class="absolute -right-6 -top-6 w-24 h-24 bg-rose-500/20 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-400/30 transition-colors duration-500"
+            ></div>
+            <div class="relative z-10">
+              <div
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2"
+              >
+                Anchored
+              </div>
+              <div
+                id="stat-anchored"
+                class="text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight"
+              >
+                0
+              </div>
+            </div>
+            <div
+              class="relative z-10 p-3 bg-rose-50 dark:bg-rose-500/10 rounded-xl group-hover:bg-rose-100 dark:group-hover:bg-rose-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 border border-transparent dark:group-hover:border-rose-500/30"
+            >
+              <img
+                src="assets/resource/images/cargo-boat.png"
+                class="w-7 h-7 drop-shadow-md"
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- SCRIPT -->
-    <script type="module">
-      import { loadSidebar } from "./assets/js/features/sidebarComponents.js";
-      import { initSidebar } from "./assets/js/features/sidebar.js";
-      import { initStats } from "./assets/js/features/stats.js";
+      <!-- AREA GRAFIK -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 relative z-10">
+        <!-- Doughnut Chart -->
+        <div class="relative group rounded-2xl lg:col-span-1 flex flex-col">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-b from-cyan-500/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+          ></div>
+          <div
+            class="relative flex-1 bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex flex-col transition-transform duration-300"
+          >
+            <h3
+              class="text-sm font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2"
+            >
+              <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+              Fleet Composition
+            </h3>
+            <div
+              class="flex-1 relative w-full min-h-[250px] flex items-center justify-center"
+            >
+              <canvas id="chart-types"></canvas>
+            </div>
+          </div>
+        </div>
 
-      document.addEventListener("DOMContentLoaded", async () => {
-        await loadSidebar(); // load sidebar HTML
-        initSidebar(null); // dashboard tidak butuh map
-        initStats(); // load stats
-      });
-    </script>
+        <!-- Horizontal Bar Chart -->
+        <div class="relative group rounded-2xl lg:col-span-2 flex flex-col">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-b from-blue-500/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+          ></div>
+          <div
+            class="relative flex-1 bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex flex-col transition-transform duration-300"
+          >
+            <h3
+              class="text-sm font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2"
+            >
+              <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+              Top Countries of Origin
+            </h3>
+            <div class="flex-1 relative w-full min-h-[250px]">
+              <canvas id="chart-countries"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AREA BAWAH (GRAFIK KECEPATAN & TABEL) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10 pb-10">
+        <!-- Vertical Bar Chart -->
+        <div class="relative group rounded-2xl lg:col-span-1 flex flex-col">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-t from-cyan-500/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+          ></div>
+          <div
+            class="relative flex-1 bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-6 shadow-xl flex flex-col transition-transform duration-300"
+          >
+            <h3
+              class="text-sm font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2"
+            >
+              <div class="w-2 h-2 rounded-full bg-indigo-400"></div>
+              Speed Distribution
+            </h3>
+            <div class="flex-1 relative w-full min-h-[250px]">
+              <canvas id="chart-speed-dist"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Aktivitas Terbaru -->
+        <div class="relative group rounded-2xl lg:col-span-2 flex flex-col">
+          <div
+            class="absolute -inset-0.5 bg-gradient-to-t from-slate-500/20 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+          ></div>
+          <div
+            class="relative flex-1 bg-white/90 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-0 shadow-xl overflow-hidden flex flex-col"
+          >
+            <div
+              class="p-6 border-b border-slate-200/50 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50"
+            >
+              <h3
+                class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4 text-emerald-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  ></path>
+                </svg>
+                Recent Vessel Activity
+              </h3>
+            </div>
+            <div class="overflow-x-auto p-2">
+              <table class="w-full text-left text-xs whitespace-nowrap">
+                <thead
+                  class="text-[10px] uppercase text-slate-500 dark:text-slate-400 tracking-widest bg-slate-50/50 dark:bg-slate-800/30"
+                >
+                  <tr>
+                    <th class="py-4 px-5 font-bold rounded-l-lg">MMSI</th>
+                    <th class="py-4 px-5 font-bold">Type</th>
+                    <th class="py-4 px-5 font-bold">Flag</th>
+                    <th class="py-4 px-5 font-bold text-center">Status</th>
+                    <th class="py-4 px-5 font-bold text-right rounded-r-lg">
+                      Speed
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="table-body"
+                  class="divide-y divide-slate-100/50 dark:divide-slate-700/30"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="./assets/js/main.js"></script>
   </body>
 </html>
