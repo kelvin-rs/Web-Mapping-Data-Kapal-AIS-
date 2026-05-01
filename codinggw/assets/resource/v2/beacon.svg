@@ -1,0 +1,28 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pondasi Tetap (Fixed Base) - High Contrast -->
+  <rect x="12" y="38" width="24" height="6" rx="1" 
+        fill="#6366F1" 
+        fill-opacity="0.35" 
+        stroke="#1E1B4B" 
+        stroke-width="2.5"/>
+  
+  <!-- Struktur Menara Menipis ke Atas -->
+  <path d="M18 38L22 14H26L30 38" 
+        stroke="#1E1B4B" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Rumah Lampu (Lantern House) -->
+  <rect x="20" y="8" width="8" height="6" rx="1" 
+        fill="#6366F1" 
+        fill-opacity="0.6" 
+        stroke="#1E1B4B" 
+        stroke-width="2"/>
+  
+  <!-- Sinar Suar (High Visibility Light Rays) -->
+  <g stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round">
+    <line x1="24" y1="2" x2="24" y2="5"/>
+    <line x1="34" y1="6" x2="30" y2="10"/>
+    <line x1="14" y1="6" x2="18" y2="10"/>
+  </g>
+</svg>

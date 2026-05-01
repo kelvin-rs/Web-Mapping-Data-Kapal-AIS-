@@ -1,0 +1,35 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Badan Pesawat (Fuselage) - High Contrast -->
+  <path d="M24 6V42L22 44H26L24 42V6Z" 
+        fill="#FF6600" 
+        fill-opacity="0.35" 
+        stroke="#800000" 
+        stroke-width="2.5"
+        stroke-linejoin="round"/>
+  
+  <!-- Sayap Utama (Wings) - High Contrast -->
+  <path d="M6 22L24 16L42 22V26L24 20L6 26V22Z" 
+        fill="#FF6600" 
+        fill-opacity="0.35" 
+        stroke="#800000" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Ekor Pesawat (Tail/Stabilizer) -->
+  <path d="M16 40L24 36L32 40V42L24 39L16 42V40Z" 
+        fill="#800000"
+        fill-opacity="0.5"
+        stroke="#800000" 
+        stroke-width="1.8" 
+        stroke-linejoin="round"/>
+  
+  <!-- Simbol SAR (Rescue Cross - Thickened) -->
+  <path d="M20 24H28M24 20V28" 
+        stroke="white" 
+        stroke-width="3" 
+        stroke-linecap="round"/>
+  <path d="M20 24H28M24 20V28" 
+        stroke="#800000" 
+        stroke-width="1.5" 
+        stroke-linecap="round"/>
+</svg>

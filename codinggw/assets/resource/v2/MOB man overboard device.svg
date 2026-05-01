@@ -1,0 +1,28 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sinyal Transmisi Luar (Glow Area) - High Contrast -->
+  <circle cx="24" cy="24" r="20" 
+          stroke="#FF4D00" 
+          stroke-width="1.5" 
+          stroke-dasharray="3 3" 
+          stroke-opacity="0.6"/>
+  
+  <!-- Simbol Lifebuoy (Pelampung) - Bolder -->
+  <circle cx="24" cy="24" r="11" 
+          fill="#FF4D00"
+          fill-opacity="0.3"
+          stroke="#661A00" 
+          stroke-width="2.5"/>
+  
+  <!-- Strip Putih pada Lifebuoy untuk Kontras Ekstra -->
+  <path d="M24 13V17M24 31V35M13 24H17M31 24H35" 
+        stroke="white" 
+        stroke-width="2.5" 
+        stroke-linecap="round"/>
+
+  <!-- Siluet Manusia (Solid High Contrast) -->
+  <circle cx="24" cy="21" r="3" fill="#661A00"/>
+  <path d="M18 29C18 26.5 20.5 25 24 25C27.5 25 30 26.5 30 29" 
+        stroke="#661A00" 
+        stroke-width="2.5" 
+        stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,21 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lambung Sekoci (Small Hull) - High Contrast -->
+  <path d="M16 4C10 4 8 8 8 12V24C8 28 12 30 16 30C20 30 24 28 24 24V12C24 8 22 4 16 4Z" 
+        fill="#A29BFE" 
+        fill-opacity="0.4" 
+        stroke="#4834D4" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Struktur Tengah (Console/Seating) - Solid -->
+  <rect x="13" y="14" width="6" height="10" rx="1.5" 
+        fill="#4834D4" 
+        stroke="#4834D4" 
+        stroke-width="1"/>
+  
+  <!-- Detail Garis Dek (High Contrast) -->
+  <path d="M11 20H13M19 20H21" 
+        stroke="#4834D4" 
+        stroke-width="1.5" 
+        stroke-linecap="round"/>
+</svg>

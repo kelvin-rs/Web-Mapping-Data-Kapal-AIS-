@@ -392,7 +392,7 @@ if ($conn->connect_error) {
 }
 
 // Query data dari tabel
-$sql = "SELECT latitude AS lat, longitude AS lon, mmsi, speed, course, waktu FROM ship_positions";
+$sql = "SELECT latitude AS lat, longitude AS lon, mmsi, speed, course, waktu, jarak FROM ship_positions";
 $result = $conn->query($sql);
 
 // Variabel untuk menghitung jumlah kapal berlayar dan berlabuh

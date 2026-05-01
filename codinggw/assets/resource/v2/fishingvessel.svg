@@ -1,0 +1,26 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lambung Kapal Kecil (Hull) - High Contrast -->
+  <path d="M20 6L12 12V32L20 36L28 32V12L20 6Z" 
+        fill="#F1C40F" 
+        fill-opacity="0.3" 
+        stroke="#936200" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Detail Radar / Tiang Antena (Tebal) -->
+  <circle cx="20" cy="18" r="2.5" fill="#936200"/>
+  <line x1="20" y1="21" x2="20" y2="28" 
+        stroke="#936200" 
+        stroke-width="2" 
+        stroke-linecap="round"/>
+  
+  <!-- Area Jaring (Hatching Lines - High Contrast) -->
+  <path d="M15 30H25" 
+        stroke="#936200" 
+        stroke-width="1.5" 
+        stroke-dasharray="3 1.5"/>
+  <path d="M15 33H25" 
+        stroke="#936200" 
+        stroke-width="1.5" 
+        stroke-dasharray="3 1.5"/>
+</svg>

@@ -1,0 +1,28 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dasar Bangunan (Control Center) - High Contrast -->
+  <path d="M14 42H34L31 32H17L14 42Z" 
+        fill="#9B59B6" 
+        fill-opacity="0.3" 
+        stroke="#4B0082" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Struktur Menara Utama -->
+  <path d="M24 10V32M19 32L24 10L29 32" 
+        stroke="#4B0082" 
+        stroke-width="2.5" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  
+  <!-- Antena & Pemancar Sinyal (Vivid Waves) -->
+  <circle cx="24" cy="8" r="2.5" fill="#4B0082"/>
+  <path d="M16 13C16 13 19 8 24 8C29 8 32 13 32 13" 
+        stroke="#4B0082" 
+        stroke-width="2" 
+        stroke-linecap="round"/>
+  <path d="M12 18C12 18 17 10 24 10C31 10 36 18 36 18" 
+        stroke="#4B0082" 
+        stroke-width="1.5" 
+        stroke-linecap="round" 
+        stroke-opacity="0.6"/>
+</svg>

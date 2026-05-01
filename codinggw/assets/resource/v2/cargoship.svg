@@ -1,0 +1,25 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lambung Kapal Runcing (Hull) - High Contrast -->
+  <path d="M24 4L12 10V38L24 44L36 38V10L24 4Z" 
+        fill="#2ECC71" 
+        fill-opacity="0.3" 
+        stroke="#1B5E20" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"/>
+  
+  <!-- Area Kontainer (Tampak Atas) dengan Garis Putus-putus -->
+  <rect x="18" y="14" width="12" height="18" rx="1" 
+        stroke="#1B5E20" 
+        stroke-width="1.5" 
+        stroke-dasharray="2 1"/>
+  
+  <!-- Anjungan Belakang (Bridge) dengan Fill Lebih Pekat -->
+  <rect x="20" y="34" width="8" height="4" rx="1" 
+        fill="#1B5E20" 
+        stroke="#1B5E20"
+        stroke-width="1"/>
+  
+  <!-- Segitiga Indikator Arah Haluan (Depan) -->
+  <path d="M24 8L26 11H22L24 8Z" 
+        fill="#1B5E20"/>
+</svg>

@@ -1,0 +1,32 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lingkaran Luar (Area Sinyal) - High Contrast -->
+  <circle cx="24" cy="24" r="21" 
+          fill="#FF007F" 
+          fill-opacity="0.3" 
+          stroke="#8B0000" 
+          stroke-width="2" 
+          stroke-dasharray="6 3"/>
+  
+  <!-- Lingkaran Inti (Homing Point) -->
+  <circle cx="24" cy="24" r="10" 
+          fill="#8B0000"
+          stroke="#8B0000" 
+          stroke-width="2.5"/>
+  
+  <!-- Tanda Silang Emergency (X) - Bolder with White Outline -->
+  <path d="M19 19L29 29M29 19L19 29" 
+        stroke="white" 
+        stroke-width="3.5" 
+        stroke-linecap="round"/>
+  <path d="M19 19L29 29M29 19L19 29" 
+        stroke="#8B0000" 
+        stroke-width="1.5" 
+        stroke-linecap="round"/>
+  
+  <!-- Gelombang Transmisi Radio (Tegar) -->
+  <path d="M37 24C37 16.8203 31.1797 11 24 11C16.8203 11 11 16.8203 11 24" 
+        stroke="#8B0000" 
+        stroke-width="2.5" 
+        stroke-opacity="0.8" 
+        stroke-linecap="round"/>
+</svg>

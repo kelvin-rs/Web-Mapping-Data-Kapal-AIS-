@@ -1,6 +1,7 @@
 export function initMap() {
   // Initialize the map
   const map = L.map("map", {
+    renderer: L.canvas(),
     attributionControl: false,
     zoomControl: false,
     minZoom: 2,
@@ -10,23 +11,12 @@ export function initMap() {
     ],
   }).setView([-7.2458, 112.7378], 10); // Surabaya, Indonesia
 
-  // Define different map themes
-  //   const realMap = L.tileLayer(
-  //     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  //     {
-  //       attribution:
-  //         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  //       maxZoom: 20,
-  //     },
-  //   );
-
   const realMap = L.tileLayer(
-    "https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=emUo6vGrhbHupr8kapDdW1xAIhS2fOJNZZFCxTy1YmOZM8C9q3PzIY2YwYRtSsct",
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
-      maxZoom: 22,
+      maxZoom: 19,
       attribution:
-        '<a href="https://www.jawg.io" target="_blank">&copy; Jawg</a> - ' +
-        '<a href="https://www.openstreetmap.org" target="_blank">&copy; OpenStreetMap</a> contributors',
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     },
   );
 

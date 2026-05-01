@@ -1,4 +1,8 @@
 import { getVessels } from "./api.js"; //Mengambil data kapal dari API
+import {
+  updateTracksIfActive,
+  isPastTrackActive,
+} from "../features/pastTrack.js";
 
 let markers = {}; // Menyimpan marker per MMSI
 let vesselHistory = {}; // Menyimpan history posisi per MMSI
@@ -36,45 +40,95 @@ function getShipIconUrl(vessel) {
   if (vessel.owner === "Ship") {
     switch (vessel["ship type"]) {
       case "Cargo Ship":
-        shipIconUrl = "assets/images/cargo.svg";
+        shipIconUrl = "assets/resource/v2/cargoship.svg";
         break;
       case "Tanker":
-        shipIconUrl = "assets/images/tanker.svg";
+        shipIconUrl = "assets/resource/v2/tanker.svg";
         break;
       case "Passenger Ship":
-        shipIconUrl = "assets/images/passenger.svg";
+        shipIconUrl = "assets/resource/v2/passengership.svg";
         break;
       case "Fishing Vessel":
-        shipIconUrl = "assets/images/fishing.svg";
+        shipIconUrl = "assets/resource/v2/fishingvessel.svg";
         break;
       default:
-        shipIconUrl = "assets/images/sna.svg";
+        shipIconUrl = "assets/resource/v2/sna.svg";
         break;
     }
   } else if (vessel.owner === "Coastal Station") {
-    shipIconUrl = "assets/images/coastal.svg";
+    shipIconUrl = "assets/resource/v2/Coastal Station.svg";
   } else if (vessel.owner === "Group of ships") {
-    shipIconUrl = "assets/images/gos.svg";
+    shipIconUrl = "assets/resource/v2/Group of ships.svg";
   } else if (vessel.owner === "SAR — Search and Rescue Aircraft") {
-    shipIconUrl = "assets/images/SAR.svg";
+    shipIconUrl = "assets/resource/v2/SAR Search and Rescue Aircraft.svg";
   } else if (vessel.owner === "Diver's radio") {
-    shipIconUrl = "assets/images/diverradio.svg";
+    shipIconUrl = "assets/resource/v2/Diver_s radio.svg";
   } else if (vessel.owner === "Aids to navigation") {
-    shipIconUrl = "assets/images/navigasi.svg";
+    shipIconUrl = "assets/resource/v2/Aids to navigation.svg";
   } else if (vessel.owner === "Auxiliary craft associated with parent ship") {
-    shipIconUrl = "assets/images/auxiliary.svg";
+    shipIconUrl =
+      "assets/resource/v2/Auxiliary craft Associated with parent ship.svg";
   } else if (vessel.owner === "AIS SART — Search and Rescue Transmitter") {
-    shipIconUrl = "assets/images/aissart.svg";
+    shipIconUrl =
+      "assets/resource/v2/AIS SART search and rescue transmitter.svg";
   } else if (vessel.owner === "MOB — Man Overboard Device") {
-    shipIconUrl = "assets/images/mob.svg";
+    shipIconUrl = "assets/resource/v2/MOB man overboard device.svg";
   } else if (
     vessel.owner === "EPIRB — Emergency Position Indicating Radio Beacon"
   ) {
-    shipIconUrl = "assets/images/beacon.svg";
+    shipIconUrl =
+      "assets/resource/v2/EPIRB emergency position indicating radio beacon.svg";
   } else {
-    shipIconUrl = "assets/images/na.svg";
+    shipIconUrl = "assets/resource/v2/na.svg";
   }
   return shipIconUrl;
+}
+
+function getShipImageUrl(vessel) {
+  let shipImageUrl;
+
+  if (vessel.owner === "Ship") {
+    switch (vessel["ship type"]) {
+      case "Cargo Ship":
+        shipImageUrl = "assets/resource/3D_Image_Vessel/CargoShip.jpg";
+        break;
+      case "Tanker":
+        shipImageUrl = "assets/resource/3D_Image_Vessel/Tanker.jpg";
+        break;
+      case "Passenger Ship":
+        shipImageUrl = "assets/resource/3D_Image_Vessel/PassengerShip.jpg";
+        break;
+      case "Fishing Vessel":
+        shipImageUrl = "assets/resource/3D_Image_Vessel/FishingVessel.jpg";
+        break;
+      default:
+        shipImageUrl = "assets/resource/3D_Image_Vessel/sna.jpg"; //belom
+        break;
+    }
+  } else if (vessel.owner === "Coastal Station") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/CoastalStation.jpg"; //belom
+  } else if (vessel.owner === "Group of ships") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/GroupOfShips.jpg";
+  } else if (vessel.owner === "SAR — Search and Rescue Aircraft") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/SAR.jpg";
+  } else if (vessel.owner === "Diver's radio") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/Diver_s radio.jpg"; //belom
+  } else if (vessel.owner === "Aids to navigation") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/AidsToNavigate.jpg"; //belom
+  } else if (vessel.owner === "Auxiliary craft associated with parent ship") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/AuxilaryCraft.jpg";
+  } else if (vessel.owner === "AIS SART — Search and Rescue Transmitter") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/AisSart.jpg"; //belom
+  } else if (vessel.owner === "MOB — Man Overboard Device") {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/MOB.jpg"; //belom
+  } else if (
+    vessel.owner === "EPIRB — Emergency Position Indicating Radio Beacon"
+  ) {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/EPIRB.jpg"; //belom
+  } else {
+    shipImageUrl = "assets/resource/3D_Image_Vessel/na.jpg"; //belom
+  }
+  return shipImageUrl;
 }
 
 // Fungsi untuk membuat marker kapal
@@ -157,6 +211,7 @@ function updateVesselsOnMap(map, vesselList) {
       markers[vessel.mmsi] = createMarker(map, vessel);
     }
   });
+  updateTracksIfActive(); // Perbarui garis jejak jika fitur past track aktif
 }
 
 // Fungsi untuk memproses data kapal dengan filter/search sebelum render
@@ -229,6 +284,15 @@ function closeVesselPanel() {
 window.closeVesselPanel = closeVesselPanel;
 
 function createVesselHTML(v, direction) {
+  // CEK STATUS TRACK KAPAL INI
+  const isActive = isPastTrackActive(v.mmsi);
+
+  // Jika aktif: Tombol jadi Merah (Hentikan). Jika mati: Tombol Gelap biasa (Past Track)
+  const trackBtnColor = isActive
+    ? "bg-rose-600 hover:bg-rose-700"
+    : "bg-slate-800 hover:bg-slate-900";
+  const trackBtnText = isActive ? "Hentikan Track" : "Past Track";
+
   return `
     <button onclick="closeVesselPanel()" class="absolute right-3 top-3 z-10 bg-white/80 backdrop-blur rounded-full p-1 shadow-md hover:bg-gray-100 transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -236,19 +300,19 @@ function createVesselHTML(v, direction) {
         </svg>
     </button>
 
-    <div class="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
-        <img src="https://flagcdn.com/w40/${v.country || "lr"}.png" class="w-6 h-4 object-cover rounded-sm shadow-sm" alt="flag">
+    <div class="px-3 py-1 border-b border-gray-100 flex items-center gap-3">
+        <img src="assets/resource/Flag/${v.country}.JPG" class="w-9 h-6 object-cover rounded-sm shadow-sm" alt="flag">
         <div>
             <h3 class="font-bold text-gray-800 leading-none uppercase tracking-tight">${v.owner || v.mmsi}</h3>
-            <span class="text-[11px] text-gray-500 font-medium uppercase">${v["ship type"] || "Container Ship"}</span>
+            <span class="text-[11px] text-gray-500 font-medium uppercase">${v["ship type"]}</span>
         </div>
     </div>
 
     <div class="relative h-48 bg-gray-200">
-        <img src="${v.image_url || "https://images.unsplash.com/photo-1544449553-3b1a8f331265?q=80&w=500"}" 
+        <img src="${getShipImageUrl(v)}" 
              class="w-full h-full object-cover" />
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-white">
-            <p class="text-[10px] opacity-80">© Photo by MarineTraffic Community</p>
+            <p class="text-[10px] opacity-80">© Photo by PenlokPENS Community</p>
         </div>
     </div>
 
@@ -290,9 +354,9 @@ function createVesselHTML(v, direction) {
         </div>
 
         <div class="flex gap-2 mb-4">
-            <button class="flex-1 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-2">
+            <button onclick="toggleVesselTrack('${v.mmsi}')" class="flex-1 ${trackBtnColor} text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                Past Track
+                ${trackBtnText}
             </button>
             <button class="flex-1 border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold py-2.5 rounded-lg transition">
                 Route Forecast
@@ -302,7 +366,7 @@ function createVesselHTML(v, direction) {
         <div class="grid grid-cols-3 gap-0 border-t border-gray-100">
             <div class="p-3 border-r border-gray-100">
                 <div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Nav Status</div>
-                <div class="text-[11px] font-bold text-green-600 line-clamp-2 uppercase">${v.status}</div>
+                <div class="text-[11px] font-bold text-green-600 line-clamnp-2 uppercase">${v.status}</div>
             </div>
             <div class="p-3 border-r border-gray-100 text-center">
                 <div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Speed/Course</div>
@@ -310,7 +374,7 @@ function createVesselHTML(v, direction) {
             </div>
             <div class="p-3 text-right">
                 <div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Draught</div>
-                <div class="text-[11px] font-bold text-gray-800">${v.draught || "14.6"}m</div>
+                <div class="text-[11px] font-bold text-gray-800">${v.jarak}m</div>
             </div>
         </div>
     </div>
@@ -320,4 +384,8 @@ function createVesselHTML(v, direction) {
         <span class="font-semibold text-sky-500 uppercase">AIS Source: Roaming</span>
     </div>
     `;
+}
+
+export function getVesselHistory() {
+  return vesselHistory;
 }

@@ -6,6 +6,7 @@ import { initSearch } from "./features/search.js";
 import { initWeathers } from "./features/weathers.js";
 import { initMeasure } from "./features/measure.js";
 import { loadSidebar } from "./features/sidebarComponents.js";
+import { initPastTrack } from "./features/pastTrack.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const map = initMap();
@@ -17,4 +18,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   initSearch(map);
   initWeathers(map);
   initMeasure(map);
+  initPastTrack(map);
 });
