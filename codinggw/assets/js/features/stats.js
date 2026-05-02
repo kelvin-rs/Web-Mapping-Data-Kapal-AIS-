@@ -1,4 +1,5 @@
 import { getVessels } from "../core/api.js";
+import { getStatsTableRowTemplate } from "../ui/templates.js";
 
 // Global Variables
 let chartInstances = {};
@@ -290,16 +291,7 @@ function updateTable(vessels) {
     const tr = document.createElement("tr");
     tr.className =
       "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors";
-    tr.innerHTML = `
-      <td class="py-3 px-4 font-mono font-semibold text-slate-700 dark:text-slate-300">${v.mmsi || "-"}</td>
-      <td class="py-3 px-4 text-slate-600 dark:text-slate-400">${v["ship type"] || "N/A"}</td>
-      <td class="py-3 px-4 text-slate-600 dark:text-slate-400 flex items-center gap-2">
-        <img src="assets/resource/Flag/${v.country}.JPG" class="w-4 h-3 rounded-sm opacity-90 shadow-sm" alt="flag">
-        ${v.country || "-"}
-      </td>
-      <td class="py-3 px-4 text-center">${statusBadge}</td>
-      <td class="py-3 px-4 font-mono text-cyan-600 dark:text-cyan-400 text-right">${v.speed || "0.0"} kn</td>
-    `;
+    tr.innerHTML = getStatsTableRowTemplate(v, statusBadge);
     tbody.appendChild(tr);
   });
 }

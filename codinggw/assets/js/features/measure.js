@@ -1,3 +1,5 @@
+import { showToast } from "../core/utils.js";
+import { getMeasureTooltipTemplate } from "../ui/templates.js";
 // ==========================
 // MEASURE MODULE
 // ==========================
@@ -58,14 +60,8 @@ export function initMeasure(map) {
       className: "bg-transparent border-none shadow-none p-0",
     })
       .setLatLng(lastPoint)
-      .setContent(
-        `
-      <div class="bg-slate-900/95 backdrop-blur border border-emerald-500/50 text-emerald-400 font-bold px-3 py-1.5 rounded-lg shadow-[0_0_15px_-3px_rgba(16,185,129,0.5)] text-xs whitespace-nowrap ml-2">
-        <span class="text-white mr-1">🏁 Jarak:</span> ${distKm} km <span class="text-slate-400 font-normal ml-1">(${distNm} NM)</span>
-      </div>
-    `,
-      )
-      .addTo(drawnItems); // Masukkan ke dalam wadah yang sama dengan garis
+      .setContent(getMeasureTooltipTemplate(distKm, distNm))
+      .addTo(drawnItems);
   });
 }
 
@@ -95,7 +91,7 @@ export function toggleMeasure(map) {
         "ring-emerald-400",
       );
 
-    showToastAlert("Mode ukur aktif. Klik titik di peta.", "active");
+    showToast("Mode ukur aktif. Klik titik di peta.", "active", "measure");
   } else {
     // === MATIKAN ===
     distanceControl.disable();
@@ -113,40 +109,6 @@ export function toggleMeasure(map) {
         "ring-emerald-400",
       );
 
-    showToastAlert("Mode ukur dimatikan.", "normal");
+    showToast("Mode ukur dimatikan.", "normal", "measure");
   }
-}
-
-// ==========================
-// TOAST ALERT (Untuk status mode saja)
-// ==========================
-function showToastAlert(message, state) {
-  let toastContainer = document.getElementById("toast-container");
-  if (!toastContainer) {
-    toastContainer = document.createElement("div");
-    toastContainer.id = "toast-container";
-    toastContainer.className =
-      "fixed bottom-20 right-3 z-[9999] flex flex-col gap-2 pointer-events-none";
-    document.body.appendChild(toastContainer);
-  }
-
-  const toast = document.createElement("div");
-  let bgColor = "bg-slate-800 border border-slate-700";
-  let iconHtml = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-
-  if (state === "active") {
-    bgColor = "bg-emerald-600";
-    iconHtml = `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>`;
-  }
-
-  toast.className = `${bgColor} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 flex items-center gap-3`;
-  toast.innerHTML = `${iconHtml} <span>${message}</span>`;
-
-  toastContainer.appendChild(toast);
-
-  setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 10);
-  setTimeout(() => {
-    toast.classList.add("opacity-0", "translate-x-10");
-    setTimeout(() => toast.remove(), 300);
-  }, 5000);
 }

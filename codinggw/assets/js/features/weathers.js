@@ -1,3 +1,4 @@
+import { showToast } from "../core/utils.js";
 // ==========================
 // WEATHER MODULE
 // ==========================
@@ -70,7 +71,7 @@ export async function initWeathers(map) {
         // Auto-close Dropdown
         if (weatherDropdown) weatherDropdown.classList.add("hidden");
 
-        showToastAlert("Semua layer cuaca dinonaktifkan.", "normal");
+        showToast("Semua layer cuaca dinonaktifkan.", "normal", "weather");
         return;
       }
 
@@ -101,7 +102,7 @@ export async function initWeathers(map) {
           break;
       }
 
-      showToastAlert(`Peta ${layerName} Diaktifkan`, "active");
+      showToast(`Peta ${layerName} Diaktifkan`, "active", "weather");
     });
   });
 
@@ -116,38 +117,4 @@ function removeAllWeatherLayers(map) {
   if (windLayer && map.hasLayer(windLayer)) map.removeLayer(windLayer);
   if (tempLayer && map.hasLayer(tempLayer)) map.removeLayer(tempLayer);
   if (rainLayer && map.hasLayer(rainLayer)) map.removeLayer(rainLayer);
-}
-
-// ==========================
-// TOAST ALERT
-// ==========================
-function showToastAlert(message, state) {
-  let toastContainer = document.getElementById("toast-container");
-  if (!toastContainer) {
-    toastContainer = document.createElement("div");
-    toastContainer.id = "toast-container";
-    toastContainer.className =
-      "fixed bottom-20 right-3 z-[9999] flex flex-col gap-2 pointer-events-none";
-    document.body.appendChild(toastContainer);
-  }
-
-  const toast = document.createElement("div");
-  let bgColor = "bg-slate-800 border border-slate-700";
-  let iconHtml = `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-
-  if (state === "active") {
-    bgColor = "bg-sky-600";
-    iconHtml = `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>`;
-  }
-
-  toast.className = `${bgColor} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 flex items-center gap-3`;
-  toast.innerHTML = `${iconHtml} <span>${message}</span>`;
-
-  toastContainer.appendChild(toast);
-
-  setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 10);
-  setTimeout(() => {
-    toast.classList.add("opacity-0", "translate-x-10");
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
 }

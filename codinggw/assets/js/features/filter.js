@@ -1,4 +1,5 @@
 import { setDataProcessor, clearProcessor } from "../core/vessel.js";
+import { showToast } from "../core/utils.js";
 
 // ==========================
 // INIT FILTER
@@ -58,7 +59,7 @@ export function applyFilter(map) {
     if (filterBtn)
       filterBtn.classList.remove("text-cyan-400", "bg-slate-800/50", "ring-2", "ring-cyan-400");
 
-    showToastAlert("Filter dinonaktifkan. Menampilkan semua kapal.", "normal");
+    showToast("Filter dinonaktifkan. Menampilkan semua kapal.", "normal", "filter");
     return;
   }
 
@@ -66,7 +67,7 @@ export function applyFilter(map) {
   if (indicator) indicator.classList.remove("hidden");
   if (filterBtn) filterBtn.classList.add("text-cyan-400", "bg-slate-800/50", "ring-2", "ring-cyan-400");
 
-  showToastAlert("Filter berhasil diterapkan!", "active");
+  showToast("Filter berhasil diterapkan!", "active", "filter");
 
   // ==========================
   // SET DATA PROCESSOR (PIPELINE)
@@ -89,44 +90,4 @@ export function applyFilter(map) {
       );
     });
   }, map);
-}
-
-// ==========================
-// TOAST ALERT NOTIFICATION
-// ==========================
-function showToastAlert(message, state) {
-  let toastContainer = document.getElementById("toast-container");
-  if (!toastContainer) {
-    toastContainer = document.createElement("div");
-    toastContainer.id = "toast-container";
-    toastContainer.className =
-      "fixed bottom-20 right-3 z-[9999] flex flex-col gap-2 pointer-events-none";
-    document.body.appendChild(toastContainer);
-  }
-
-  const toast = document.createElement("div");
-  // Warna berbeda: Cyan untuk filter aktif, Slate untuk filter mati
-  const bgColor =
-    state === "active" ? "bg-cyan-600" : "bg-slate-800 border border-slate-700";
-
-  toast.className = `${bgColor} text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 flex items-center gap-3`;
-
-  const iconHtml =
-    state === "active"
-      ? `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>`
-      : `<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
-
-  toast.innerHTML = `${iconHtml} <span>${message}</span>`;
-  toastContainer.appendChild(toast);
-
-  // Animasi masuk
-  setTimeout(() => {
-    toast.classList.remove("translate-y-10", "opacity-0");
-  }, 10);
-
-  // Animasi keluar otomatis setelah 3 detik
-  setTimeout(() => {
-    toast.classList.add("opacity-0", "translate-x-10");
-    setTimeout(() => toast.remove(), 300);
-  }, 5000);
 }

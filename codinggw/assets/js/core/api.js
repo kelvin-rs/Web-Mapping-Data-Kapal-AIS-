@@ -1,26 +1,17 @@
-const BASE_URL = "http://localhost/Web%20AIS/codinggw/assets/php";
+import { BASE_URL } from "./constants.js";
+import { showToast } from "./utils.js";
 
-// helper untuk fetch + error handling
-async function request(endpoint) {
-  try {
-    const res = await fetch(`${BASE_URL}/${endpoint}`);
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-
-    return await res.json();
-  } catch (err) {
-    console.error("API error:", err);
-    return { vessels: [] }; // fallback aman
-  }
-}
-
-// ==========================
-// ENDPOINT UTAMA
-// ==========================
-
-// ambil semua kapal
 export async function getVessels() {
-  return await request("get_vessels.php");
+  try {
+    const response = await fetch(BASE_URL);
+    if (!response.ok) throw new Error("Server bermasalah");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("API Error:", error);
+
+    showToast("Koneksi ke server terputus!", "error");
+
+    return { vessels: [] };
+  }
 }
