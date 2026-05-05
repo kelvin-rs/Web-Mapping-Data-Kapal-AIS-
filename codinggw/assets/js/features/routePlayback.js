@@ -1,65 +1,67 @@
 import { getVesselHistory } from "../core/vessel.js";
-import { getShipAssets } from "./vesselMarker.js";
+import { getShipAssets, toggleMarkerVisibility } from "./vesselMarker.js";
 import { showToast, calculateBearing } from "../core/utils.js";
 import { getPlayerUITemplate } from "../ui/templates.js";
+import { fetchVesselHistory } from "../core/api.js";
 
 let playbackLayerGroup = null;
 let movingMarker = null;
 let pathLine = null;
 let playInterval = null;
-
 let routeData = [];
 let currentIndex = 0;
 let isPlaying = false;
 let currentMap = null;
 let lastValidBearing = 0;
+let activePlaybackMmsi = null;
 
 // ==========================================
 // 1. INISIALISASI & MUNCULKAN PLAYER UI
 // ==========================================
-export function startRoutePlayback(map, vessel) {
-  const history = getVesselHistory()[vessel.mmsi];
+export async function startRoutePlayback(map, vessel) {
+  if (isPlaying) return;
+  showToast(`Memuat data rute pelayaran kapal...`, "info", "info");
 
-  if (!history || history.length < 2) {
-    showToast("Data riwayat (Past Track) belum cukup untuk memutar animasi.");
+  routeData = await fetchVesselHistory(vessel.mmsi);
+
+  if (!routeData || routeData.length < 2) {
+    showToast(
+      "Data rute belum cukup panjang untuk diputar.",
+      "warning",
+      "info",
+    );
     return;
   }
+  activePlaybackMmsi = vessel.mmsi;
+  toggleMarkerVisibility(vessel.mmsi, false);
 
   currentMap = map;
-  routeData = history;
   currentIndex = 0;
   isPlaying = false;
 
   if (playbackLayerGroup) currentMap.removeLayer(playbackLayerGroup);
   playbackLayerGroup = L.layerGroup().addTo(currentMap);
 
-  // GAMBAR GARIS RUTE (WARNA MERAH ROSE)
   const latlngs = routeData.map((p) => [p.lat, p.lon]);
   pathLine = L.polyline(latlngs, {
-    color: "#e11d48", // Rose 600 (Merah)
+    color: "#e11d48", // Rose 600
     weight: 4,
     dashArray: "8, 8",
     opacity: 0.9,
     lineCap: "round",
   }).addTo(playbackLayerGroup);
 
-  currentMap.fitBounds(pathLine.getBounds(), { padding: [50, 50] });
+  currentMap.setView([routeData[0].lat, routeData[0].lon], 13);
 
-  lastValidBearing = calculateBearing(
-    routeData[0].lat,
-    routeData[0].lon,
-    routeData[1].lat,
-    routeData[1].lon,
-  );
+  let initialCourse = routeData[0].course || vessel.course || 0;
 
   const assets = getShipAssets(vessel);
   const ghostIcon = L.divIcon({
     className: "bg-transparent border-none moving-vessel-anim",
     html: `
       <div class="relative flex items-center justify-center w-[30px] h-[30px]">
-        <!-- Efek Glow Merah -->
         <div class="absolute inset-0 rounded-full bg-rose-500/30 animate-pulse blur-sm pointer-events-none"></div>
-        <img src="${assets.iconUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-[0_0_8px_rgba(225,29,72,0.8)]" style="transform: rotate(${lastValidBearing}deg)" />
+        <img src="${assets.iconUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-[0_0_8px_rgba(225,29,72,0.8)]" style="transform: rotate(${initialCourse}deg)" />
       </div>
     `,
     iconSize: [30, 30],
@@ -72,6 +74,16 @@ export function startRoutePlayback(map, vessel) {
   }).addTo(playbackLayerGroup);
 
   renderPlayerUI(vessel);
+}
+
+export function updatePlaybackIfActive(mmsi, lat, lon, course) {
+  if (activePlaybackMmsi === String(mmsi)) {
+    if (pathLine) {
+      pathLine.addLatLng([lat, lon]);
+    }
+
+    routeData.push({ lat: lat, lon: lon, course: course });
+  }
 }
 
 // ==========================================
@@ -103,6 +115,13 @@ function updateMarkerPosition() {
   const nextPoint = routeData[currentIndex + 1];
 
   movingMarker.setLatLng([currentPoint.lat, currentPoint.lon]);
+
+  if (currentMap) {
+    currentMap.panTo([currentPoint.lat, currentPoint.lon], {
+      animate: true,
+      duration: 1,
+    });
+  }
 
   if (nextPoint) {
     if (
@@ -138,6 +157,12 @@ function updateMarkerPosition() {
 function closePlayback() {
   isPlaying = false;
   clearInterval(playInterval);
+
+  if (activePlaybackMmsi) {
+    toggleMarkerVisibility(activePlaybackMmsi, true);
+    activePlaybackMmsi = null;
+  }
+
   if (playbackLayerGroup && currentMap) {
     currentMap.removeLayer(playbackLayerGroup);
   }

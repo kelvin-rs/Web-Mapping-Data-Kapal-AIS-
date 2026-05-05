@@ -6,25 +6,22 @@ import {
   OWNER_TYPES,
 } from "../core/constants.js";
 import { getTooltipTemplate } from "../ui/templates.js";
+import { updateTracksIfActive } from "./pastTrack.js";
+import { updatePlaybackIfActive } from "./routePlayback.js";
 
-// ==========================================
-// 1. STATE & VARIABLES
-// ==========================================
 let markers = {};
 let activeMarker = null;
 let activeOriginalIcon = null;
+let isZoomConfigured = false;
 
-// ==========================================
-// 2. HELPER ASSET & RESET
-// ==========================================
 export function getShipAssets(vessel) {
-  let iconFile = "na.svg";
-  let imgFile = "na.jpg";
+  let iconFile = "cargoship.svg";
+  let imgFile = "CargoShip.jpg";
 
   if (vessel.owner === "Ship") {
     const type = SHIP_TYPES[vessel["ship type"]];
-    iconFile = type ? type.icon : "sna.svg";
-    imgFile = type ? type.img : "sna.jpg";
+    iconFile = type ? type.icon : "cargoship.svg";
+    imgFile = type ? type.img : "CargoShip.jpg";
   } else if (OWNER_TYPES[vessel.owner]) {
     iconFile = OWNER_TYPES[vessel.owner].icon;
     imgFile = OWNER_TYPES[vessel.owner].img;
@@ -44,10 +41,19 @@ export function resetActiveMarker() {
   }
 }
 
-// ==========================================
-// 3. LOGIKA RENDER KE PETA LEAFLET
-// ==========================================
 export function renderVesselsToMap(map, vesselList) {
+  if (!isZoomConfigured) {
+    const updateScale = () => {
+      const zoom = map.getZoom();
+      const scale = Math.max(0.4, Math.min(2.5, zoom / 12));
+      map.getContainer().style.setProperty("--vessel-scale", scale);
+    };
+
+    map.on("zoom", updateScale);
+    updateScale();
+    isZoomConfigured = true;
+  }
+
   const currentMMSI = new Set(vesselList.map((v) => v.mmsi));
 
   Object.keys(markers).forEach((mmsi) => {
@@ -61,15 +67,69 @@ export function renderVesselsToMap(map, vesselList) {
     if (!vessel.lat || !vessel.lon) return;
 
     if (markers[vessel.mmsi]) {
-      // Perbarui posisi
-      markers[vessel.mmsi].setLatLng([vessel.lat, vessel.lon]);
+      const marker = markers[vessel.mmsi];
+      glideTo(markers[vessel.mmsi], vessel.lat, vessel.lon, 4800);
 
-      // Update arah putaran ikon jika memakai DivIcon
-      const iconElement = markers[vessel.mmsi].getElement();
-      if (iconElement) {
-        const img = iconElement.querySelector("img");
-        if (img) img.style.transform = `rotate(${vessel.course || 0}deg)`;
+      const shipImg = document.getElementById(`ship-img-${vessel.mmsi}`);
+      if (shipImg) {
+        shipImg.style.transform = `rotate(${vessel.course || 0}deg)`;
       }
+
+      const assets = getShipAssets(vessel);
+      const isMoving = vessel.speed > 0.5;
+      if (marker.isTooltipOpen()) {
+        const tooltipStatus = document.getElementById(
+          `live-tooltip-status-${vessel.mmsi}`,
+        );
+        const tooltipDot = document.getElementById(
+          `live-tooltip-dot-${vessel.mmsi}`,
+        );
+
+        if (tooltipStatus)
+          tooltipStatus.innerText =
+            vessel.status || (isMoving ? "UNDER WAY" : "MOORED");
+        if (tooltipDot) {
+          tooltipDot.className = `w-1.5 h-1.5 rounded-full shadow-sm shrink-0 mt-1 ${isMoving ? "bg-emerald-500 animate-pulse" : "bg-amber-400"}`;
+        }
+      } else {
+        const assets = getShipAssets(vessel);
+        const dotColor = isMoving
+          ? "bg-emerald-500 animate-pulse"
+          : "bg-amber-400";
+        const newTooltipHtml = getTooltipTemplate(
+          vessel,
+          assets.iconUrl,
+          dotColor,
+        );
+        marker.setTooltipContent(newTooltipHtml);
+      }
+      if (activeMarker === marker) {
+        const panelStatus = document.getElementById("live-panel-status");
+        if (panelStatus)
+          panelStatus.innerText =
+            vessel.status || (isMoving ? "UNDER WAY" : "MOORED");
+
+        const panelSpeedCourse = document.getElementById(
+          "live-panel-speed-course",
+        );
+        if (panelSpeedCourse)
+          panelSpeedCourse.innerText = `${vessel.speed} kn / ${vessel.course}°`;
+
+        const panelDraught = document.getElementById("live-panel-draught");
+        if (panelDraught) panelDraught.innerText = `${vessel.jarak || "0"} m`;
+        const panelTime = document.getElementById("live-panel-time");
+        if (panelTime) {
+          const now = new Date();
+          panelTime.innerText = `Received: ${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+        }
+      }
+      updateTracksIfActive(vessel.mmsi, vessel.lat, vessel.lon);
+      updatePlaybackIfActive(
+        vessel.mmsi,
+        vessel.lat,
+        vessel.lon,
+        vessel.course,
+      );
     } else {
       markers[vessel.mmsi] = createMarker(map, vessel);
     }
@@ -79,13 +139,14 @@ export function renderVesselsToMap(map, vesselList) {
 function createMarker(map, vessel) {
   const assets = getShipAssets(vessel);
 
-  // 1. IKON DEFAULT (DENGAN EFEK HOVER OTOMATIS)
   const shipIcon = L.divIcon({
     className: "group bg-transparent border-none",
     html: `
-      <div class="relative flex items-center justify-center w-[26px] h-[26px]">
+      <div class="relative flex items-center justify-center w-[26px] h-[26px] transition-transform duration-200" style="transform: scale(var(--vessel-scale, 1));">
         <div class="absolute -inset-1.5 rounded-full border-2 border-sky-400/60 bg-sky-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-[0_0_10px_rgba(148,163,184,0.5)]"></div>
-        <img src="${assets.iconUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-110" style="transform: rotate(${vessel.course || 0}deg)" />
+        <img id="ship-img-${vessel.mmsi}" src="${assets.iconUrl}" 
+             class="relative z-10 w-full h-full object-contain drop-shadow-sm group-hover:scale-110" 
+             style="transform: rotate(${vessel.course || 0}deg); transition: transform 1.5s ease-out;" />
       </div>
     `,
     iconSize: [26, 26],
@@ -96,7 +157,14 @@ function createMarker(map, vessel) {
     icon: shipIcon,
   }).addTo(map);
 
-  // 2. TOOLTIP MODERN (WHITE GLASSMORPHISM)
+  marker.on("mouseover", function () {
+    this.setZIndexOffset(9999); // Bawa ikon ke lapisan paling atas
+  });
+
+  marker.on("mouseout", function () {
+    this.setZIndexOffset(0); // Kembalikan ke lapisan normal
+  });
+
   const isMoving = vessel.speed > 0.5;
   const dotColor = isMoving ? "bg-emerald-500 animate-pulse" : "bg-amber-400";
 
@@ -109,7 +177,6 @@ function createMarker(map, vessel) {
     opacity: 1,
   });
 
-  // 3. EVENT KLIK (MUNCULKAN PANEL)
   marker.on("click", (e) => {
     L.DomEvent.stopPropagation(e);
     resetActiveMarker();
@@ -118,14 +185,17 @@ function createMarker(map, vessel) {
     activeMarker = marker;
     activeOriginalIcon = shipIcon;
 
-    // Ikon Aktif (Klik) menggunakan warna Biru Cyan/Neon
     const activeIcon = L.divIcon({
       className: "bg-transparent border-none",
       html: `
-        <div class="relative flex items-center justify-center w-[26px] h-[26px]">
+        <div class="relative flex items-center justify-center w-[26px] h-[26px] transition-transform duration-200" style="transform: scale(var(--vessel-scale, 1));">
           <div class="absolute -inset-3 rounded-full border-2 border-cyan-400 animate-ping opacity-75 pointer-events-none"></div>
           <div class="absolute -inset-2 rounded-full border-2 border-cyan-500 bg-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.8)] pointer-events-none"></div>
-          <img src="${assets.iconUrl}" class="relative z-10 w-full h-full object-contain drop-shadow-md scale-110" style="transform: rotate(${vessel.course || 0}deg)" />
+          
+          <!-- PENAMBAHAN ID DAN TRANSITION CSS UNTUK ROTASI HALUS -->
+          <img id="ship-img-${vessel.mmsi}" src="${assets.iconUrl}" 
+               class="relative z-10 w-full h-full object-contain drop-shadow-md scale-110" 
+               style="transform: rotate(${vessel.course || 0}deg); transition: transform 1.5s ease-out;" />
         </div>
       `,
       iconSize: [26, 26],
@@ -137,4 +207,42 @@ function createMarker(map, vessel) {
   });
 
   return marker;
+}
+
+export function toggleMarkerVisibility(mmsi, isVisible) {
+  if (markers[mmsi]) {
+    markers[mmsi].setOpacity(isVisible ? 1 : 0);
+  }
+}
+
+// =========================================================
+// THE GLIDE ENGINE: Animasi Meluncur Presisi (Interpolasi 60 FPS)
+// =========================================================
+function glideTo(marker, targetLat, targetLon, durationMs) {
+  if (marker._glideFrame) {
+    cancelAnimationFrame(marker._glideFrame);
+  }
+
+  const startLatLng = marker.getLatLng();
+  const startLat = startLatLng.lat;
+  const startLon = startLatLng.lng;
+  const startTime = performance.now();
+
+  function animate(currentTime) {
+    const elapsedTime = currentTime - startTime;
+    let progress = elapsedTime / durationMs;
+
+    if (progress > 1) progress = 1;
+
+    const currentLat = startLat + (targetLat - startLat) * progress;
+    const currentLon = startLon + (targetLon - startLon) * progress;
+
+    marker.setLatLng([currentLat, currentLon]);
+
+    if (progress < 1) {
+      marker._glideFrame = requestAnimationFrame(animate);
+    }
+  }
+
+  marker._glideFrame = requestAnimationFrame(animate);
 }

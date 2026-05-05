@@ -15,3 +15,15 @@ export async function getVessels() {
     return { vessels: [] };
   }
 }
+
+export async function fetchVesselHistory(mmsi) {
+  try {
+    const url = `http://localhost/Web%20AIS/codinggw/assets/php/get_vessel_history.php?mmsi=${mmsi}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network response was not ok");
+    return await response.json();
+  } catch (error) {
+    console.error("Gagal menarik data sejarah:", error);
+    return [];
+  }
+}

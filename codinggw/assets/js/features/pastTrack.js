@@ -1,30 +1,29 @@
-import { getVesselHistory } from "../core/vessel.js";
+import { fetchVesselHistory } from "../core/api.js";
+import { showToast } from "../core/utils.js";
 
 let trackLayerGroup = null;
 let activeTrackMMSI = null; // HANYA MENYIMPAN 1 KAPAL
 
 export function initPastTrack(map) {
   trackLayerGroup = L.layerGroup().addTo(map);
-  
+
   // Fungsi Global untuk atribut onclick di HTML
-  window.toggleVesselTrack = function(mmsi) {
+  window.toggleVesselTrack = async function (mmsi) {
     const mmsiStr = String(mmsi);
 
     if (activeTrackMMSI === mmsiStr) {
-      // Jika yang diklik adalah kapal yang SAMA -> MATIKAN TRACK
       activeTrackMMSI = null;
+      trackLayerGroup.clearLayers();
+      showToast("Lintasan pelayaran ditutup.", "normal", "info");
     } else {
-      // Jika yang diklik kapal LAIN -> GANTI TRACK KE KAPAL BARU
       activeTrackMMSI = mmsiStr;
+      showToast("Menampilkan jejak pelayaran kapal...", "info", "info");
+      await redrawActiveTracks();
     }
 
-    // TUTUP PANEL KAPAL OTOMATIS
     if (typeof window.closeVesselPanel === "function") {
       window.closeVesselPanel();
     }
-
-    // GAMBAR ULANG (Otomatis menghapus yang lama dan menggambar yang baru)
-    redrawActiveTracks();
   };
 }
 
@@ -33,51 +32,76 @@ export function isPastTrackActive(mmsi) {
   return activeTrackMMSI === String(mmsi);
 }
 
-// Dipanggil dari vessel.js saat data di-update dari database
-export function updateTracksIfActive() {
-  if (activeTrackMMSI) {
-    redrawActiveTracks();
+export async function updateTracksIfActive(mmsi, newLat, newLon) {
+  if (activeTrackMMSI === String(mmsi)) {
+    addPointToActiveTrack(newLat, newLon);
   }
 }
 
-// Logika Menggambar Garis HD
-function redrawActiveTracks() {
-  trackLayerGroup.clearLayers(); // Selalu bersihkan peta terlebih dahulu
-  
-  if (!activeTrackMMSI) return; // Jika tidak ada yang aktif, berhenti di sini.
+async function redrawActiveTracks() {
+  trackLayerGroup.clearLayers(); 
+  if (!activeTrackMMSI) return;
 
-  const history = getVesselHistory();
-  const points = history[activeTrackMMSI];
+  const historyData = await fetchVesselHistory(activeTrackMMSI);
 
-  if (points && points.length > 1) {
-    const latlngs = points.map((p) => [p.lat, p.lon]);
+  if (historyData && historyData.length > 1) {
+    const latlngs = historyData.map((p) => [p.lat, p.lon]);
 
     // A. Garis Glow/Shadow (Efek HD)
     L.polyline(latlngs, {
       color: "#000",
       weight: 6,
       opacity: 0.15,
-      lineJoin: 'round'
+      lineJoin: "round",
+      className: "track-glow", // Tambahkan class agar mudah di-update
     }).addTo(trackLayerGroup);
 
-    // B. Garis Utama (Cyan)
+    // B. Garis Utama (Cyan/Merah)
     L.polyline(latlngs, {
-      color: "#ee2236", 
+      color: "#ee2236",
       weight: 3,
       opacity: 1,
-      lineJoin: 'round',
-      dashArray: "1, 10", 
+      lineJoin: "round",
+      dashArray: "1, 10",
+      className: "track-main", // Tambahkan class agar mudah di-update
     }).addTo(trackLayerGroup);
-    
-    // Titik lokasi setiap kali database diupdate
-    latlngs.forEach(coord => {
-        L.circleMarker(coord, {
-            radius: 3,
-            fillColor: "#ee2236",
-            color: "#fff",
-            weight: 1.5,
-            fillOpacity: 1
-        }).addTo(trackLayerGroup);
+
+    // Titik lokasi (History Circle)
+    latlngs.forEach((coord) => {
+      L.circleMarker(coord, {
+        radius: 3,
+        fillColor: "#ee2236",
+        color: "#fff",
+        weight: 1.5,
+        fillOpacity: 1,
+        className: "track-circle", // Tambahkan class
+      }).addTo(trackLayerGroup);
     });
+  } else {
+    showToast("Jejak pelayaran belum cukup untuk ditampilkan.", "warning", "info");
+    activeTrackMMSI = null;
   }
+}
+
+function addPointToActiveTrack(lat, lon) {
+  if (!trackLayerGroup) return;
+
+  const newCoord = [lat, lon];
+
+  // 1. Tambah Lingkaran Titik Baru
+  L.circleMarker(newCoord, {
+    radius: 3,
+    fillColor: "#ee2236",
+    color: "#fff",
+    weight: 1.5,
+    fillOpacity: 1,
+    className: "track-circle",
+  }).addTo(trackLayerGroup);
+
+  // 2. Tambah titik baru ke garis glow dan garis utama
+  trackLayerGroup.eachLayer((layer) => {
+    if (layer instanceof L.Polyline) {
+      layer.addLatLng(newCoord);
+    }
+  });
 }

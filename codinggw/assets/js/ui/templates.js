@@ -12,7 +12,7 @@ export function getTooltipTemplate(vessel, iconUrl, dotColor) {
           <span class="font-extrabold text-slate-800 text-[13px] uppercase tracking-tight leading-snug break-words">
             ${vessel.name || vessel.owner || vessel.mmsi}
           </span>
-          <span class="text-[9px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">MMSI: ${vessel.mmsi || "-"}</span>
+          <span class="text-[9px] text-slate-400 font-bold uppercase mt-0.5 tracking-wider">Country: ${vessel.country || "-"}</span>
         </div>
       </div>
       <div class="flex items-start gap-3">
@@ -29,8 +29,8 @@ export function getTooltipTemplate(vessel, iconUrl, dotColor) {
            <div class="flex justify-between items-start gap-4 text-[10px]">
              <span class="text-slate-400 font-semibold uppercase tracking-wide shrink-0">Status</span>
              <div class="flex items-start gap-1.5 justify-end text-right">
-               <span class="w-1.5 h-1.5 rounded-full ${dotColor} shadow-sm shrink-0 mt-1"></span>
-               <span class="text-slate-700 font-bold uppercase break-words leading-tight">
+               <span id="live-tooltip-dot-${vessel.mmsi}" class="w-1.5 h-1.5 rounded-full ${dotColor} shadow-sm shrink-0 mt-1"></span>
+               <span id="live-tooltip-status-${vessel.mmsi}" class="text-slate-700 font-bold uppercase break-words leading-tight">
                  ${vessel.status || "UNKNOWN"}
                </span>
              </div>
@@ -109,13 +109,13 @@ export function getVesselPanelTemplate(v, imgUrl, isActive) {
             </button>
         </div>
         <div class="grid grid-cols-3 gap-0 border-t border-gray-100">
-            <div class="p-3 border-r border-gray-100"><div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Nav Status</div><div class="text-[11px] font-bold text-green-600 line-clamnp-2 uppercase">${v.status || "UNKNOWN"}</div></div>
-            <div class="p-3 border-r border-gray-100 text-center"><div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Speed/Course</div><div class="text-[11px] font-bold text-gray-800">${v.speed} kn / ${v.course}°</div></div>
-            <div class="p-3 text-right"><div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Draught</div><div class="text-[11px] font-bold text-gray-800">${v.jarak || "0"}m</div></div>
+            <div class="p-3 border-r border-gray-100"><div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Nav Status</div><div id="live-panel-status" class="text-[11px] font-bold text-green-600 line-clamnp-2 uppercase">${v.status || "UNKNOWN"}</div></div>
+            <div class="p-3 border-r border-gray-100 text-center"><div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Speed/Course</div><div id="live-panel-speed-course" class="text-[11px] font-bold text-gray-800">${v.speed} kn / ${v.course}°</div></div>
+            <div class="p-3 text-right"><div class="text-[9px] font-bold text-gray-400 uppercase mb-1 leading-tight">Draught</div><div id="live-panel-draught" class="text-[11px] font-bold text-gray-800">${v.jarak || "0"}m</div></div>
         </div>
     </div>
     <div class="bg-gray-50 px-4 py-2 flex justify-between items-center text-[10px] text-gray-400">
-        <span>Received: Just now</span>
+        <span id="live-panel-time">Received: Just now</span>
         <span class="font-semibold text-sky-500 uppercase">AIS Source: Terrestrial</span>
     </div>
   `;
