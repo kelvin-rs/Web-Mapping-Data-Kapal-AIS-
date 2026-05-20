@@ -48,7 +48,7 @@ var baseMaps = {
 
 L.control.layers(baseMaps).addTo(map);
 
-var apiUrl = 'http://localhost/Web%20AIS/codinggw/assets/php/get_vessels.php';
+var apiUrl = 'http://localhost/Web_AIS/codinggw/assets/php/get_vessels.php';
 var markers = {};  // Menyimpan marker per MMSI
 var vesselHistory = {}; // Menyimpan history posisi per MMSI
 //var historyLines = {}; // Menyimpan polyline history untuk tiap MMSI

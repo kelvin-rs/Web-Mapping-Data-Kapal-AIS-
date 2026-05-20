@@ -1,7 +1,7 @@
 // ==========================================
 // API CONFIGURATION
 // ==========================================
-export const BASE_URL = "http://localhost/Web%20AIS/codinggw/assets/php/get_vessels.php";
+export const BASE_URL = "http://localhost/Web_AIS/codinggw/assets/php/get_vessels.php";
 
 // ==========================================
 // DIRECTORY PATHS
