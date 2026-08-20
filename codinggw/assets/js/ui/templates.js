@@ -76,24 +76,6 @@ export function getVesselPanelTemplate(v, imgUrl, isActive) {
         </div>
     </div>
     <div class="p-4 bg-white">
-        <div class="flex justify-between items-end mb-4">
-            <div class="text-center flex-1">
-                <div class="text-2xl font-bold text-gray-800 leading-tight">FPO</div>
-                <div class="text-[10px] text-gray-400 font-bold uppercase">Departure</div>
-            </div>
-            <div class="flex-[2] px-4 pb-2">
-                <div class="relative flex items-center">
-                    <div class="w-full h-[3px] bg-gray-100 rounded-full overflow-hidden"><div class="bg-sky-400 h-full" style="width: 65%"></div></div>
-                    <div class="absolute left-[65%] -translate-y-1/2 top-1/2">
-                        <svg class="w-5 h-5 text-sky-500 transform rotate-90" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center flex-1">
-                <div class="text-2xl font-bold text-gray-800 leading-tight">BCN</div>
-                <div class="text-[10px] text-gray-400 font-bold uppercase">Destination</div>
-            </div>
-        </div>
         <div class="flex justify-between text-[11px] mb-4 text-gray-600 px-2">
             <div class="text-left"><span class="block text-gray-400 font-semibold uppercase text-[9px]">ATD</span>2024-04-20 06:12</div>
             <div class="text-right"><span class="block text-gray-400 font-semibold uppercase text-[9px]">Reported ETA</span>${v.waktu || "--/--"}</div>
